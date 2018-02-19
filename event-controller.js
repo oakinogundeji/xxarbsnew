@@ -151,7 +151,11 @@ function spawnBots() {
 }
 
 function spawnBetfairBot() {
+
+  const regx = /['"]/;
+
   console.log(`Spawning Betfair BOT`);
+
   BETFAIR = spawn('node', ['./betfair-hr.js'], {
     stdio: ['pipe', 'ipc', 'pipe']
   });
@@ -159,7 +163,17 @@ function spawnBetfairBot() {
   // listen for data
   BETFAIR.on('message', data => {
     console.log('data from Betfair...');
-    console.log(data);
+    const dataObj = JSON.parse(data);
+    let target = dataObj.selection;
+    target = target.toLowerCase();
+    target = target.replace(regx, '');
+    const marketControllerArray = selectionsList.filter(val => {
+      let newVal = val.toLowerCase();
+      newVal = newVal.replace(regx, '');
+      return newVal == target;
+    });
+    const marketController = marketControllerArray[0];
+    marketControllers[marketController].send(data);
   });
 
   BETFAIR.stderr.on('data', err => {
@@ -311,8 +325,4 @@ connectToDB()
     }
   })
   .then(ok => spawnBots())
-  /*
-  .then(ok => {
-    return selectionsList.forEach(selection => marketControllers[selection].send({msg: 'ur name?'}))
-  })*/
   .catch(err => console.error(err));

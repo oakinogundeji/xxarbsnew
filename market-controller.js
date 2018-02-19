@@ -81,7 +81,14 @@ process.on('SIGINT', () => {
   });
 });
 
-process.on('message', msg => console.log(`Market controller for ${SELECTION} received ${msg.msg} from event-controller`));
+process.on('message', data => {
+  //console.log(`got msg from event-controller.. resp: ${SELECTION}`);
+
+  const dataObj = JSON.parse(data);
+  console.log(`Market controller for ${SELECTION} received data from event-controller`);
+  console.log(dataObj);
+  //process.exit(0);
+});
 
 function connectToDB() {
    return new Promise((resolve, reject) => {
@@ -788,5 +795,5 @@ async function endcurrentArb(timestamp) {
 connectToDB()
   .then(ok => createSelectionDeltaDoc())
   .then(ok => createSelectionArbsDoc())
-  .then(ok => console.log(`all good from ${SELECTION}`))
+  //.then(ok => console.log(`all good from ${SELECTION}`))
   .catch(err => console.error(err));

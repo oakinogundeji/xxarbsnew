@@ -69,11 +69,7 @@ async function bot() {
             odds,
             liquidity,
             SELECTION;
-          // check if delta is for runner
-          //const regx = /['"]/;
            SELECTION = e.target.parentElement.parentElement.parentElement.parentElement.children[0].children[0].children[1].children[0].children[0].children[0].children[2].innerText.split('\n')[0];
-          /*TARGET_SELECTION = TARGET_SELECTION.toLowerCase();
-          TARGET_SELECTION = TARGET_SELECTION.replace(regx, '');*/
           // check if back or lay
           if(e.target.parentElement.parentElement.classList[0] == 'back') { // BACK
             if(e.target.parentElement.parentElement.className == 'back mv-bet-button back-button back-selection-button') {
