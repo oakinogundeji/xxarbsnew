@@ -18,7 +18,9 @@ const
 
 let
   selectionsList,
-  marketControllers = {};
+  marketControllers = {},
+  BETFAIR,
+  SMARKETS;
 // helper functions
 
 async function getSelections() {
@@ -138,6 +140,110 @@ function forkMarketController(SELECTION, eventIdentifiers) {
   return Promise.resolve(true);
 }
 
+function spawnBots() {
+  // spawn the BOTS
+  console.log(`spawning the streaming bots`);
+  spawnBetfairBot();
+  //spawnSmarketsBot();
+  return Promise.resolve(true
+
+  );
+}
+
+function spawnBetfairBot() {
+  console.log(`Spawning Betfair BOT`);
+  BETFAIR = spawn('node', ['./betfair-hr.js'], {
+    stdio: ['pipe', 'ipc', 'pipe']
+  });
+
+  // listen for data
+  BETFAIR.on('message', data => {
+    console.log('data from Betfair...');
+    console.log(data);
+  });
+
+  BETFAIR.stderr.on('data', err => {
+    console.error(`BETFAIR bot err`);
+    console.error(err.toString());
+    console.log(`terminating existing Betfair BOT`);
+    process.kill(BETFAIR.pid);
+    console.log(`respawning Betfair BOT`);
+    return spawnBetfairBot();
+  });
+
+  BETFAIR.on('error', err => {
+    console.error(`BETFAIR CP err`);
+    console.error(err);
+    console.log(`terminating existing Betfair BOT`);
+    process.kill(BETFAIR.pid);
+    console.log(`respawning Betfair BOT`);
+    return spawnBetfairBot();
+  });
+
+  BETFAIR.on('close', code => {
+    if(code < 1) {
+      return console.log(`BETFAIR BOT closed normally...`);
+    } else {
+      return console.error(`BETFAIR BOT closed abnormally...`);
+    }
+  });
+}
+/*
+function spawnSmarketsBot() {
+  console.log(`Spawning Smarkets BOT for ${SELECTION}`);
+  if(SPORT == 'horse-racing') {
+    SMARKETS = spawn('node', ['./smarkets-hr.js', SELECTION]);
+  } else {
+    SMARKETS = spawn('node', ['./smarkets-generic.js', SELECTION]);
+  }
+
+  // listen for data
+
+  SMARKETS.stdout.on('data', data => {
+    try {
+      console.log(`data from smarkets bot for ${SELECTION}`);
+      const dataObj = JSON.parse(data.toString());
+      console.log(dataObj);
+      if((dataObj.betType == 'b0') || (dataObj.betType == 'l0')) {
+        checkForArbs('smarkets', dataObj);
+      }
+      return saveData('smarkets', dataObj);
+    } catch(err) {
+      console.error(err);
+      console.log(`terminating existing Smarkets BOT for ${SELECTION}`);
+      process.kill(SMARKETS.pid);
+      console.log(`respawning Smarkets BOT for ${SELECTION}`);
+      return spawnSmarketsBot();
+    }
+  });
+
+  SMARKETS.stderr.on('data', err => {
+    console.error(`SMARKETS err for ${SELECTION}...`);
+    console.error(err.toString());
+    console.log(`terminating existing Smarkets BOT for ${SELECTION}`);
+    process.kill(SMARKETS.pid);
+    console.log(`respawning Smarkets BOT for ${SELECTION}`);
+    return spawnSmarketsBot();
+  });
+
+  SMARKETS.on('error', err => {
+    console.error(`SMARKETS CP err for ${SELECTION}...`);
+    console.error(err);
+    console.log(`terminating existing Smarkets BOT for ${SELECTION}`);
+    process.kill(SMARKETS.pid);
+    console.log(`respawning Smarkets BOT for ${SELECTION}`);
+    return spawnSmarketsBot();
+  });
+
+  SMARKETS.on('close', code => {
+    if(code < 1) {
+      return console.log(`SMARKETS BOT for ${SELECTION} closed normally...`);
+    } else {
+      return console.error(`SMARKETS BOT for ${SELECTION} closed abnormally...`);
+    }
+  });
+}
+*/
 // connect to DBURL
 let db;
 const options = {
@@ -203,7 +309,9 @@ connectToDB()
       //return forkMarketController(selectionsList[0], eventIdentifiers);
       return selectionsList.forEach(selection => forkMarketController(selection, eventIdentifiers));
     }
-  })/*
+  })
+  .then(ok => spawnBots())
+  /*
   .then(ok => {
     return selectionsList.forEach(selection => marketControllers[selection].send({msg: 'ur name?'}))
   })*/
