@@ -4,8 +4,6 @@ if(process.env.NODE_ENV != 'production') {
 }
 //=============================================================================
 const
-  {spawn} = require('child_process'),
-  P = require('puppeteer'),
   Promise = require('bluebird'),
   accounting = require('accounting'),
   mongoose = require('mongoose'),
@@ -17,20 +15,7 @@ const
   EVENT_LABEL = eventIdentifiers.eventLabel,
   SPORT = eventIdentifiers.sport,
   EVENT_DATE = eventIdentifiers.eventDate,
-  TARGETS = eventIdentifiers.targets,
-  DBURL = process.env.DBURL,
-  BETFAIR_URL = process.env.BETFAIR_URL,
-  EVENT_END_URL = process.env.EVENT_END_URL,
-  HR_EVENT_LINKS_SELECTOR = 'a.race-link',
-  GENERIC_EVENT_LINKS_SELECTOR = 'span.event-name',
-  EMAIL = process.env.EMAIL,
-  PWD = process.env.SMARKETS_PWD,
-  EVENT_URL = process.env.SMARKETS_URL,
-  ACCESS_LOGIN_SELECTOR = '#header-login',
-  EMAIL_SELECTOR = '#login-form-email',
-  PWD_SELECTOR = '#login-form-password',
-  SHOW_PWD_SELECTOR = '#login-page > div.form-page-content > form > div:nth-child(2) > div > div > span.after > button',
-  SIGNIN_BTN_SELECTOR = '#login-page > div.form-page-content > form > button';
+  DBURL = process.env.DBURL;
 
 let arbTrigger = {
   betfair: {
@@ -96,6 +81,8 @@ process.on('SIGINT', () => {
   });
 });
 
+process.on('message', msg => console.log(`Market controller for ${SELECTION} received ${msg.msg} from event-controller`));
+
 function connectToDB() {
    return new Promise((resolve, reject) => {
      console.log(`Attempting to connect to ${DBURL}...`);
@@ -106,11 +93,11 @@ function connectToDB() {
        return reject('There was an error connecting to mongodb')
      });
      db.once('connected', () => {
-       console.info(`Selection successfully connected to ${DBURL}`);
+       console.info(`Market Controller successfully connected to ${DBURL}`);
        return resolve(true);
      });
      db.once('disconnected', () => {
-       console.info('Selection successfully disconnected from ' + DBURL);
+       console.log('Market Controller successfully disconnected from ' + DBURL);
      });
    });
  }
@@ -172,127 +159,6 @@ async function createSelectionArbsDoc() {
       return Promise.reject(newErr);
     }
   }
-}
-
-function spawnBots() {
-  // spawn the BOTS
-  console.log(`spawning 2 bots for ${SELECTION}`);
-  spawnBetfairBot();
-  spawnSmarketsBot();
-  return true;
-}
-
-function spawnBetfairBot() {
-  if(SELECTION.toLowerCase() == 'draw') {
-    SELECTION = 'The Draw';
-  }
-  console.log(`Spawning Betfair BOT for ${SELECTION}`);
-  if(SPORT == 'horse-racing') {
-    BETFAIR = spawn('node', ['./betfair-hr.js', SELECTION]);
-  } else {
-    BETFAIR = spawn('node', ['./betfair-generic.js', SELECTION]);
-  }
-
-  // listen for data
-
-  BETFAIR.stdout.on('data', data => {
-    try {
-      console.log(`data from betfair bot for ${SELECTION}`);
-      const dataObj = JSON.parse(data.toString());
-      console.log(dataObj);
-      if((dataObj.betType == 'b0') || (dataObj.betType == 'l0')) {
-        checkForArbs('betfair', dataObj);
-      }
-      return saveData('betfair', dataObj);
-    } catch(err) {
-      console.error(err);
-      console.log(`terminating existing Betfair BOT for ${SELECTION}`);
-      process.kill(BETFAIR.pid);
-      console.log(`respawning Betfair BOT for ${SELECTION}`);
-      return spawnBetfairBot();
-    }
-  });
-
-  BETFAIR.stderr.on('data', err => {
-    console.error(`BETFAIR err for ${SELECTION}...`);
-    console.error(err.toString());
-    console.log(`terminating existing Betfair BOT for ${SELECTION}`);
-    process.kill(BETFAIR.pid);
-    console.log(`respawning Betfair BOT for ${SELECTION}`);
-    return spawnBetfairBot();
-  });
-
-  BETFAIR.on('error', err => {
-    console.error(`BETFAIR CP err for ${SELECTION}...`);
-    console.error(err);
-    console.log(`terminating existing Betfair BOT for ${SELECTION}`);
-    process.kill(BETFAIR.pid);
-    console.log(`respawning Betfair BOT for ${SELECTION}`);
-    return spawnBetfairBot();
-  });
-
-  BETFAIR.on('close', code => {
-    if(code < 1) {
-      return console.log(`BETFAIR BOT for ${SELECTION} closed normally...`);
-    } else {
-      return console.error(`BETFAIR BOT for ${SELECTION} closed abnormally...`);
-    }
-  });
-}
-
-function spawnSmarketsBot() {
-  console.log(`Spawning Smarkets BOT for ${SELECTION}`);
-  if(SPORT == 'horse-racing') {
-    SMARKETS = spawn('node', ['./smarkets-hr.js', SELECTION]);
-  } else {
-    SMARKETS = spawn('node', ['./smarkets-generic.js', SELECTION]);
-  }
-
-  // listen for data
-
-  SMARKETS.stdout.on('data', data => {
-    try {
-      console.log(`data from smarkets bot for ${SELECTION}`);
-      const dataObj = JSON.parse(data.toString());
-      console.log(dataObj);
-      if((dataObj.betType == 'b0') || (dataObj.betType == 'l0')) {
-        checkForArbs('smarkets', dataObj);
-      }
-      return saveData('smarkets', dataObj);
-    } catch(err) {
-      console.error(err);
-      console.log(`terminating existing Smarkets BOT for ${SELECTION}`);
-      process.kill(SMARKETS.pid);
-      console.log(`respawning Smarkets BOT for ${SELECTION}`);
-      return spawnSmarketsBot();
-    }
-  });
-
-  SMARKETS.stderr.on('data', err => {
-    console.error(`SMARKETS err for ${SELECTION}...`);
-    console.error(err.toString());
-    console.log(`terminating existing Smarkets BOT for ${SELECTION}`);
-    process.kill(SMARKETS.pid);
-    console.log(`respawning Smarkets BOT for ${SELECTION}`);
-    return spawnSmarketsBot();
-  });
-
-  SMARKETS.on('error', err => {
-    console.error(`SMARKETS CP err for ${SELECTION}...`);
-    console.error(err);
-    console.log(`terminating existing Smarkets BOT for ${SELECTION}`);
-    process.kill(SMARKETS.pid);
-    console.log(`respawning Smarkets BOT for ${SELECTION}`);
-    return spawnSmarketsBot();
-  });
-
-  SMARKETS.on('close', code => {
-    if(code < 1) {
-      return console.log(`SMARKETS BOT for ${SELECTION} closed normally...`);
-    } else {
-      return console.error(`SMARKETS BOT for ${SELECTION} closed abnormally...`);
-    }
-  });
 }
 
 async function saveData(exchange, data) {
@@ -918,144 +784,9 @@ async function endcurrentArb(timestamp) {
   }
 }
 
-async function listenForCloseEvent(flag) {
-  if(flag == 'HR') {
-    return listenForHREventClose();
-  } else {
-    return listenForGenericEventClose();
-  }
-}
-
-async function listenForHREventClose() {
-  // instantiate browser
-  const browser = await P.launch({
-    headless: false,
-    timeout: 180000
-  });
-  // create blank page
-  const page = await browser.newPage();
-  // set viewport to 1366*768
-  await page.setViewport({width: 1366, height: 768});
-  // set the user agent
-  await page.setUserAgent('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko)');
-  // navigate to RACE_URL
-  await page.goto(EVENT_END_URL, {
-    waitUntil: 'networkidle2',
-    timeout: 180000
-  });
-  // wait for 30 secs
-  await page.waitFor(30*1000);
-  // define checkEventEnd function
-  async function checkEventEnd() {
-    console.log('checkEventEnd invoked...');
-    // get all events on page
-    const events = await page.$$eval(HR_EVENT_LINKS_SELECTOR, (events, BETFAIR_URL) => {
-      console.log('querying for events...');
-      const eventNotEnded = events.filter(event => event.href == BETFAIR_URL);
-      console.log('eventNotEnded obj...');
-      console.log(eventNotEnded);
-      return eventNotEnded;
-    }, BETFAIR_URL);
-    if(events.length > 0) {// event has NOT ended
-      console.log(`event has NOT ended for ${SELECTION}...`);
-      console.log('closing puppeteer browser and rechecking in 5 mins...');
-      await browser.close();
-      return setTimeout(listenForHREventClose, 300000);
-    } else {
-      console.log(`event has ended for ${SELECTION}...`);
-      process.kill(BETFAIR.pid);
-      process.kill(SMARKETS.pid);
-      return process.exit(0);
-    }
-  }
-  return checkEventEnd();
-}
-
-async function listenForGenericEventClose() {
-  const sortedTargetsArray = TARGETS.sort();
-  const sortedTargetsString = sortedTargetsArray.join(', ');
-  console.log('sortedTargetsString');
-  console.log(sortedTargetsString);
-  // instantiate browser
-  const browser = await P.launch({
-    headless: false,
-    timeout: 180000
-  });
-  // create blank page
-  const page = await browser.newPage();
-  // set viewport to 1366*768
-  await page.setViewport({width: 1366, height: 768});
-  // set the user agent
-  await page.setUserAgent('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko)');
-  // navigate to RACE_URL
-  await page.goto(EVENT_END_URL, {
-    waitUntil: 'networkidle2',
-    timeout: 180000
-  });
-  // wait for 30 secs
-  await page.waitFor(30*1000);
-  // define checkEventEnd function
-  async function checkEventEnd() {
-    console.log('checkEventEnd invoked...');
-    // get all events on page
-    const eventFound = await page.$$eval(GENERIC_EVENT_LINKS_SELECTOR, (events) => {
-      console.log('querying for events...');
-      const result = events.map(event => {
-        let eventTargetsArray = event.innerText.split('vs.');
-        let trimmedeventTargetsArray = eventTargetsArray.map(item => item.trim());
-        console.log('trimmedeventTargetsArray');
-        console.log(trimmedeventTargetsArray);
-        trimmedeventTargetsArray.sort();
-        let eventTargetsArraySortedString = trimmedeventTargetsArray.join(', ');
-        eventTargetsArraySortedString = eventTargetsArraySortedString.trim();
-        let eventStatus = event.parentElement.parentElement.children[1].children[0].innerText.toLowerCase();
-        return {
-          label: eventTargetsArraySortedString,
-          status: eventStatus
-        };
-      });
-      console.log('result..');
-      console.log(result);
-      return result;
-    });
-    console.log('eventFound');
-    console.log(eventFound);
-    const ongoing = eventFound.filter(event => event.label == sortedTargetsString);
-    console.log('ongoing');
-    console.log(ongoing);
-    if(!!ongoing[0] && ongoing[0].status != 'event ended') {// event has NOT ended
-      console.log(`event has NOT ended for ${SELECTION}...`);
-      console.log('closing puppeteer browser and rechecking in 5 mins...');
-      await browser.close();
-      return setTimeout(listenForGenericEventClose, 300000);
-    } else {
-      console.log(`event has ended for ${SELECTION}...`);
-      console.log('terminating BOTs and selection processes...');
-      process.kill(BETFAIR.pid);
-      process.kill(SMARKETS.pid);
-      await browser.close();
-      return process.exit(0);
-    }
-  }
-  return checkEventEnd();
-}
-
 // execute
 connectToDB()
   .then(ok => createSelectionDeltaDoc())
   .then(ok => createSelectionArbsDoc())
-  .then(ok => {
-    console.log(`spawning streaming BOTs for ${SELECTION}...`);
-    return spawnBots();
-  })
-  .then(ok => {
-    console.log('ready to listen for event ended');
-    let flag;
-    if(SPORT == 'horse-racing') {
-      flag = 'HR';
-    } else {
-      flag = 'GENERIC';
-    }
-    return listenForCloseEvent(flag);
-  })
+  .then(ok => console.log(`all good from ${SELECTION}`))
   .catch(err => console.error(err));

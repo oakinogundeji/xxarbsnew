@@ -5,8 +5,7 @@ if(process.env.NODE_ENV != 'production') {
 //=============================================================================
 // dependencies
 const
-  {fork} = require('child_process'),
-  crypto = require('crypto'),
+  {fork, spawn} = require('child_process'),
   P = require('puppeteer'),
   Promise = require('bluebird'),
   mongoose = require('mongoose'),
@@ -17,7 +16,9 @@ const
   SMARKETS_EVENTS_CONTAINER_SELECTOR = 'ul.contracts',
   SMARKETS_SELECTIONS_SELECTOR = 'div.contract-info';
 
-let selectionsList;
+let
+  selectionsList,
+  marketControllers = {};
 // helper functions
 
 async function getSelections() {
@@ -129,10 +130,12 @@ async function createEventCard() {
   }
 }
 
-function forkSelection(SELECTION, eventIdentifiers) {
+function forkMarketController(SELECTION, eventIdentifiers) {
   const SELECTION_INFO = JSON.stringify(eventIdentifiers);
-  console.log(`launching SELECTION for ${SELECTION}...`);
-  return fork('./selection.js', [SELECTION, SELECTION_INFO]);
+  console.log(`launching MARKET-CONTROLLER for ${SELECTION}...`);
+  const cp = fork('./market-controller.js', [SELECTION, SELECTION_INFO]);
+  marketControllers[SELECTION] = cp;
+  return Promise.resolve(true);
 }
 
 // connect to DBURL
@@ -186,19 +189,22 @@ connectToDB()
   .then(ok => createEventCard())
   .then(eventIdentifiers => {
     console.log('all good...');
-    console.log('launching SELECTIONs...');
+    console.log('launching MARKET-CONTROLLERs...');
     // create 1 SELECTION per selection
     if(eventIdentifiers.sport != 'horse-racing') {
       eventIdentifiers.targets = selectionsList.filter(selection => selection.toLowerCase() != 'draw');
       console.log('event-controller closing db connection...');
       db.close();
-      return forkSelection(selectionsList[0], eventIdentifiers);
-      //return selectionsList.forEach(selection => forkSelection(selection, eventIdentifiers));
+      //return forkMarketController(selectionsList[0], eventIdentifiers);
+      return selectionsList.forEach(selection => forkMarketController(selection, eventIdentifiers));
     } else {
       console.log('event-controller closing db connection...');
       db.close();
-      return forkSelection(selectionsList[0], eventIdentifiers);
-      //return selectionsList.forEach(selection => forkSelection(selection, eventIdentifiers));
+      //return forkMarketController(selectionsList[0], eventIdentifiers);
+      return selectionsList.forEach(selection => forkMarketController(selection, eventIdentifiers));
     }
-  })
+  })/*
+  .then(ok => {
+    return selectionsList.forEach(selection => marketControllers[selection].send({msg: 'ur name?'}))
+  })*/
   .catch(err => console.error(err));
