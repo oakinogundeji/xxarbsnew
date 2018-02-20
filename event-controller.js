@@ -173,7 +173,9 @@ function spawnBetfairBot() {
       return newVal == target;
     });
     const marketController = marketControllerArray[0];
-    marketControllers[marketController].send(data);
+    marketControllers[marketController].send({
+      exchange: 'betfair',
+      payload: dataObj});
   });
 
   BETFAIR.stderr.on('data', err => {

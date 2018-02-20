@@ -15,7 +15,9 @@ const
   EVENT_LABEL = eventIdentifiers.eventLabel,
   SPORT = eventIdentifiers.sport,
   EVENT_DATE = eventIdentifiers.eventDate,
-  DBURL = process.env.DBURL;
+  DBURL = process.env.DBURL,
+  MSG_EMAIL = process.env.MSG_EMAIL,
+  ENDPOINT = process.env.ENDPOINT;
 
 let arbTrigger = {
   betfair: {
@@ -82,12 +84,11 @@ process.on('SIGINT', () => {
 });
 
 process.on('message', data => {
-  //console.log(`got msg from event-controller.. resp: ${SELECTION}`);
-
-  const dataObj = JSON.parse(data);
+  const {exchange, payload} = data;
   console.log(`Market controller for ${SELECTION} received data from event-controller`);
-  console.log(dataObj);
-  //process.exit(0);
+  console.log(payload);
+  //checkForArbs(exchange, payload);
+  return saveData(exchange, payload);
 });
 
 function connectToDB() {
@@ -687,7 +688,7 @@ async function saveArbs(data) {
         .send({
           "transport": "ses",
           "from": "noreply@valueservices.uk",
-          "to": EMAIL,
+          "to": MSG_EMAIL,
           "subject": EVENT_LABEL,
           "emailbody": summary,
           "templateName": "GenericEmail"
@@ -721,7 +722,7 @@ async function saveArbs(data) {
         .send({
           "transport": "ses",
           "from": "noreply@valueservices.uk",
-          "to": EMAIL,
+          "to": MSG_EMAIL,
           "subject": EVENT_LABEL,
           "emailbody": data.summary,
           "templateName": "GenericEmail"
@@ -769,7 +770,7 @@ async function endcurrentArb(timestamp) {
       .send({
         "transport": "ses",
         "from": "noreply@valueservices.uk",
-        "to": EMAIL,
+        "to": MSG_EMAIL,
         "subject": EVENT_LABEL,
         "emailbody": summary,
         "templateName": "GenericEmail"
@@ -795,5 +796,5 @@ async function endcurrentArb(timestamp) {
 connectToDB()
   .then(ok => createSelectionDeltaDoc())
   .then(ok => createSelectionArbsDoc())
-  //.then(ok => console.log(`all good from ${SELECTION}`))
+  .then(ok => console.log(`all good from market-controller for ${SELECTION}`))
   .catch(err => console.error(err));
