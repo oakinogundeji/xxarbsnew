@@ -348,7 +348,7 @@ async function listenForHREventClose() {
      console.log(`event has ended for ${EVENT_LABEL}...`);
      console.log('terminating BOTs and market-controller processes...');
      process.kill(BETFAIR.pid);
-     //process.kill(SMARKETS.pid);
+     process.kill(SMARKETS.pid);
      const marketControllersKeysArray = Object.keys(marketControllers);
      marketControllersKeysArray.forEach(key => process.kill(marketControllers[key].pid));
      await browser.close();
@@ -419,7 +419,7 @@ async function listenForGenericEventClose() {
      console.log(`event has ended for ${EVENT_LABEL}...`);
      console.log('terminating BOTs and market-controller processes...');
      process.kill(BETFAIR.pid);
-     //process.kill(SMARKETS.pid);
+     process.kill(SMARKETS.pid);
      const marketControllersKeysArray = Object.keys(marketControllers);
      marketControllersKeysArray.forEach(key => process.kill(marketControllers[key].pid));
      await browser.close();

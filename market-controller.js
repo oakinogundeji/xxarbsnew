@@ -9,6 +9,7 @@ const
   mongoose = require('mongoose'),
   request = require('superagent'),
   SelectionDocModel = require('./models/selection-docs'),
+  SelectionArbsDocModel = require('./models/selection-arbs-docs'),
   SELECTION = process.argv[2],
   eventIdentifiers = JSON.parse(process.argv[3]),
   EVENT_LABEL = eventIdentifiers.eventLabel,
@@ -137,6 +138,34 @@ async function createSelectionDeltaDoc() {
     } else {
       console.error(`failed to create selectionDoc for ${saveNewSelectionDoc.selection} on ${selectionDoc.eventLabel}`);
       const newErr = new Error(`failed to create selectionDoc for ${saveNewSelectionDoc.selection} on ${selectionDoc.eventLabel}`);
+      return Promise.reject(newErr);
+    }
+  }
+}
+
+async function createSelectionArbsDoc() {
+  let selectionArbsDoc = {
+    eventLabel: EVENT_LABEL,
+    eventDate: EVENT_DATE,
+    selection: SELECTION,
+    arbs: []
+  };
+  const query = SelectionArbsDocModel.findOne({eventLabel: EVENT_LABEL, selection: SELECTION});
+  const foundDoc = await query.exec();
+  if(!!foundDoc && (foundDoc.eventLabel == selectionArbsDoc.eventLabel) && (foundDoc.selection == selectionArbsDoc.selection)) {
+    console.log(`${foundDoc.selection} for ${foundDoc.eventLabel} arbs doc already exists...`);
+    console.log(foundDoc);
+    return Promise.resolve(true);
+  } else {
+    const newSelectionArbsDoc = new SelectionArbsDocModel(selectionArbsDoc);
+    const saveNewSelectionArbsDoc = await newSelectionArbsDoc.save();
+    if((saveNewSelectionArbsDoc.eventLabel == selectionArbsDoc.eventLabel) && (saveNewSelectionArbsDoc.selection == selectionArbsDoc.selection)) {
+      console.log(`successfully created selectionArbsDoc for ${saveNewSelectionArbsDoc.selection} on ${saveNewSelectionArbsDoc.eventLabel}`);
+      console.log(saveNewSelectionArbsDoc);
+      return Promise.resolve(true);
+    } else {
+      console.error(`failed to create selectionArbsDoc for ${saveNewSelectionArbsDoc.selection} on ${saveNewSelectionArbsDoc.eventLabel}`);
+      const newErr = new Error(`failed to create selectionArbsDoc for ${saveNewSelectionArbsDoc.selection} on ${saveNewSelectionArbsDoc.eventLabel}`);
       return Promise.reject(newErr);
     }
   }
@@ -606,8 +635,8 @@ function checkForArbs(exchange, data) {
 function saveArbs(arbsDoc, C_Arb) {
   if(!currentArb) {// check if first time arbs detected
     console.log('no currentArb... setting it to received data..');
-    currentArb = data;
-    return saveData(data);
+    currentArb = arbsDoc;
+    return saveData(arbsDoc, null);
   }
   else {// set timestampTo of existing arbsDoc to timestampFrom of new arbs doc
     console.log('currentArb exists...');
@@ -626,14 +655,14 @@ function saveArbs(arbsDoc, C_Arb) {
     // update timestampTo of currentArb
     if(C_Arb.timestampFrom in ARBS) {
       console.log('found C_Arb in ARBS... ready to update');
-      return saveData(C_Arb)
+      return saveData(C_Arb, true);
     }
     else {
       return console.error('C_Arb NOT found in ARBS');
     }
   }
 
-  function saveData(arbsDoc) {
+  async function saveData(arbsDoc, flag) {
     console.log('saveData called...');
     console.log('arbsDoc...');
     console.log(arbsDoc);
@@ -642,28 +671,45 @@ function saveArbs(arbsDoc, C_Arb) {
     if(arbsDoc.timestampFrom in ARBS) {
       console.log('successfully saved new arb');
       console.log(ARBS);
-      const used = process.memoryUsage().heapUsed / 1024 / 1024;
-      const BODY = arbsDoc.summary;
-      return request
-        .post(ENDPOINT)
-        .set('Accept', 'application/json')
-        .send({
-          "transport": "ses",
-          "from": "noreply@valueservices.uk",
-          "to": MSG_EMAIL,
-          "subject": EVENT_LABEL,
-          "emailbody": BODY,
-          "templateName": "GenericEmail"
-        })
-        .then(resp => {
-          console.log('msg sending response...');
-          console.log(resp.statusCode);
-          return console.log(`The process uses approximately ${used} MB`);
-        })
-        .catch(err => {
-          console.error('email sending err...');
-          return console.error(err);
-        });
+      if(flag) {
+        const query = SelectionArbsDocModel.findOneAndUpdate({eventLabel: EVENT_LABEL, selection: SELECTION}, {$push: {
+            arbs: arbsDoc
+          }});
+        try{
+          const addedNewArbsDocData = await query.exec();
+          console.log('addedNewArbsDocData...');
+          console.log(addedNewArbsDocData);
+          const used = process.memoryUsage().heapUsed / 1024 / 1024;
+          const BODY = arbsDoc.summary;
+          return request
+            .post(ENDPOINT)
+            .set('Accept', 'application/json')
+            .send({
+              "transport": "ses",
+              "from": "noreply@valueservices.uk",
+              "to": MSG_EMAIL,
+              "subject": EVENT_LABEL,
+              "emailbody": BODY,
+              "templateName": "GenericEmail"
+            })
+            .then(resp => {
+              console.log('msg sending response...');
+              console.log(resp.statusCode);
+              console.log(`The process uses approximately ${used} MB`);
+              return Promise.resolve(true);
+            })
+            .catch(err => {
+              console.error('email sending err...');
+              return console.error(err);
+            });
+        }
+        catch(err) {
+          console.error('failed to add new data to selectonArbsDoc...');
+          console.error(err);
+          const newErr = new Error(`failed to add new data to selectonArbsDoc`);
+          return Promise.reject(newErr);
+        }
+      }
     }
     else {
       console.error('failed to save new arb');
@@ -699,7 +745,7 @@ function endcurrentArb(timestamp, C_Arb) {
     return console.error('C_Arb NOT found in ARBS');
   }
 
-  function saveData(arbsDoc) {
+  async function saveData(arbsDoc) {
     console.log('saveData called...');
     console.log('arbsDoc...');
     console.log(arbsDoc);
@@ -710,29 +756,46 @@ function endcurrentArb(timestamp, C_Arb) {
       console.log(ARBS);
       const used = process.memoryUsage().heapUsed / 1024 / 1024;
       const BODY = arbsDoc.summary;
-      return request
-        .post(ENDPOINT)
-        .set('Accept', 'application/json')
-        .send({
-          "transport": "ses",
-          "from": "noreply@valueservices.uk",
-          "to": MSG_EMAIL,
-          "subject": EVENT_LABEL,
-          "emailbody": BODY,
-          "templateName": "GenericEmail"
-        })
-        .then(resp => {
-          console.log('msg sending response...');
-          console.log(resp.statusCode);
-          return console.log(`The process uses approximately ${used} MB`);
-        })
-        .catch(err => {
-          console.error('email sending err...');
-          return console.error(err);
-        });
+      const query = SelectionArbsDocModel.findOneAndUpdate({eventLabel: EVENT_LABEL, selection: SELECTION}, {$push: {
+          arbs: arbsDoc
+        }});
+      try{
+        const endedOldArbsDocData = await query.exec();
+        console.log('endedOldArbsDocData...');
+        console.log(endedOldArbsDocData);
+        const used = process.memoryUsage().heapUsed / 1024 / 1024;
+        const BODY = arbsDoc.summary;
+        return request
+          .post(ENDPOINT)
+          .set('Accept', 'application/json')
+          .send({
+            "transport": "ses",
+            "from": "noreply@valueservices.uk",
+            "to": MSG_EMAIL,
+            "subject": EVENT_LABEL,
+            "emailbody": BODY,
+            "templateName": "GenericEmail"
+          })
+          .then(resp => {
+            console.log('msg sending response...');
+            console.log(resp.statusCode);
+            console.log(`The process uses approximately ${used} MB`);
+            return Promise.resolve(true);
+          })
+          .catch(err => {
+            console.error('email sending err...');
+            return console.error(err);
+          });
+      }
+      catch(err) {
+        console.error('failed to end old arbs doc in db...');
+        console.error(err);
+        const newErr = new Error(`failed to end old arbs doc in db`);
+        return Promise.reject(newErr);
+      }
     }
     else {
-      console.error('failed to save new arb');
+      console.error('failed to end old arbs doc in RAM');
       return console.error(arbsDoc);
     }
   }
