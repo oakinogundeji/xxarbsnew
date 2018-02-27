@@ -182,9 +182,11 @@ function spawnBetfairBot() {
       return newVal == target;
     });
     const marketController = marketControllerArray[0];
-    marketControllers[marketController].send({
-      exchange: 'betfair',
-      payload: dataObj});
+    if(marketController in marketControllers) {
+      return marketControllers[marketController].send({
+        exchange: 'betfair',
+        payload: dataObj});
+    }
   });
 
   BETFAIR.stderr.on('data', err => {
@@ -227,9 +229,11 @@ function spawnSmarketsBot() {
     console.log('data from Smarkets...');
     const dataObj = JSON.parse(data);
     const marketController = dataObj.selection;
-    marketControllers[marketController].send({
-      exchange: 'smarkets',
-      payload: dataObj});
+    if(marketController in marketControllers) {
+      return marketControllers[marketController].send({
+        exchange: 'smarkets',
+        payload: dataObj});
+    }
   });
 
   SMARKETS.stderr.on('data', err => {
