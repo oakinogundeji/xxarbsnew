@@ -16,7 +16,7 @@ const
   SPORT = eventIdentifiers.sport,
   EVENT_DATE = eventIdentifiers.eventDate,
   DBURL = process.env.DBURL,
-  MSG_EMAIL = process.env.MSG_EMAIL,
+  MSG_EMAIL = 'simon@percayso.com, paul@percayso.com',
   ENDPOINT = process.env.ENDPOINT;
 
 let arbTrigger = {
@@ -680,7 +680,7 @@ function saveArbs(arbsDoc, C_Arb) {
           console.log('addedNewArbsDocData...');
           console.log(addedNewArbsDocData);
           const used = process.memoryUsage().heapUsed / 1024 / 1024;
-          const BODY = arbsDoc.summary;
+          const BODY = `${arbsDoc.summary}. TimestampFrom: ${arbsDoc.timestampFrom}`;
           return request
             .post(ENDPOINT)
             .set('Accept', 'application/json')
@@ -755,7 +755,7 @@ function endcurrentArb(timestamp, C_Arb) {
       console.log('successfully ended existing arb');
       console.log(ARBS);
       const used = process.memoryUsage().heapUsed / 1024 / 1024;
-      const BODY = arbsDoc.summary;
+      const BODY = `${arbsDoc.summary}. TimestampFrom: ${arbsDoc.timestampFrom}`;
       const query = SelectionArbsDocModel.findOneAndUpdate({eventLabel: EVENT_LABEL, selection: SELECTION}, {$push: {
           arbs: arbsDoc
         }});
@@ -764,7 +764,7 @@ function endcurrentArb(timestamp, C_Arb) {
         console.log('endedOldArbsDocData...');
         console.log(endedOldArbsDocData);
         const used = process.memoryUsage().heapUsed / 1024 / 1024;
-        const BODY = arbsDoc.summary;
+        const BODY = `${arbsDoc.summary}. TimestampFrom: ${arbsDoc.timestampFrom}`;
         return request
           .post(ENDPOINT)
           .set('Accept', 'application/json')
