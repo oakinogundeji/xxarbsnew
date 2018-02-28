@@ -86,11 +86,19 @@ process.on('SIGINT', () => {
 });
 
 process.on('message', data => {
-  const {exchange, payload} = data;
-  console.log(`Market controller for ${SELECTION} received data from event-controller`);
-  console.log(payload);
-  checkForArbs(exchange, payload);
-  return saveBotData(exchange, payload);
+  if(!!data.alert) {
+    const reason = 'race started';
+    let timestamp = new Date();
+    timestamp = timestamp.toISOString();
+    return endcurrentArb(timestamp, currentArb, reason);
+  }
+  else {
+    const {exchange, payload} = data;
+    console.log(`Market controller for ${SELECTION} received data from event-controller`);
+    console.log(payload);
+    checkForArbs(exchange, payload);
+    return saveBotData(exchange, payload);
+  }
 });
 
 function connectToDB() {
@@ -349,7 +357,8 @@ function checkForArbs(exchange, data) {
             console.log('updated arbTrigger due to no arbs but inplay currentArb via betfair b0...');
             console.log(arbTrigger);
             // end in-play arbs
-            return endcurrentArb(data.timestamp, C_Arb);
+            const reason = 'delta';
+            return endcurrentArb(data.timestamp, C_Arb, reason);
           }
           else {// no currenArbs in play
             // update in memory arbTrigger with new betfair.b0 values
@@ -437,7 +446,8 @@ function checkForArbs(exchange, data) {
               liquidity: data.liquidity
             };
             // end in-play arbs
-            return endcurrentArb(data.timestamp, C_Arb);
+            const reason = 'delta';
+            return endcurrentArb(data.timestamp, C_Arb, reason);
           }
           else {// no currenArbs in play
             // update in memory arbTrigger with new betfair.l0 values
@@ -527,7 +537,8 @@ function checkForArbs(exchange, data) {
               liquidity: data.liquidity
             };
             // end in-play arbs
-            return endcurrentArb(data.timestamp, C_Arb);
+            const reason = 'delta';
+            return endcurrentArb(data.timestamp, C_Arb, reason);
           }
           else {// no currenArbs in play
             // update in memory arbTrigger with new smarkets.b0 values
@@ -615,7 +626,8 @@ function checkForArbs(exchange, data) {
               liquidity: data.liquidity
             };
             // end in-play arbs
-            return endcurrentArb(data.timestamp, C_Arb);
+            const reason = 'delta';
+            return endcurrentArb(data.timestamp, C_Arb, reason);
           }
           else {// no currentArbs in play
             // update in memory arbTrigger with new smarkets.l0 values
@@ -649,7 +661,8 @@ function saveArbs(arbsDoc, C_Arb) {
     const duration = (end - start) / 1000;
     let endTime = new Date(arbsDoc.timestampFrom);
     endTime = endTime.toISOString();
-    const newSummary = C_Arb.summary + `. Duration: ${duration} seconds.`;
+    const reason = 'delta';
+    const newSummary = C_Arb.summary + `. Duration: ${duration} seconds. Reason: ${reason}`;
     C_Arb.timestampTo = endTime;
     C_Arb.summary = newSummary;
     // update timestampTo of currentArb
@@ -718,7 +731,7 @@ function saveArbs(arbsDoc, C_Arb) {
   }
 }
 
-function endcurrentArb(timestamp, C_Arb) {
+function endcurrentArb(timestamp, C_Arb, reason) {
   console.log('endcurrentArb... C_Arb');
   // setup
   let
@@ -729,7 +742,7 @@ function endcurrentArb(timestamp, C_Arb) {
   const duration = (end - start) / 1000;
   let endTime = new Date(timestamp);
   endTime = endTime.toISOString();
-  const newSummary = C_Arb.summary + `. Duration: ${duration} seconds.`;
+  const newSummary = C_Arb.summary + `. Duration: ${duration} seconds. Reason: ${reason}`;
   // update timestampTo of in-play currenArbs
   C_Arb.timestampTo = endTime;
   C_Arb.summary = newSummary;
@@ -804,5 +817,6 @@ function endcurrentArb(timestamp, C_Arb) {
 // execute
 connectToDB()
   .then(ok => createSelectionDeltaDoc())
+  .then(ok => createSelectionArbsDoc())
   .then(ok => console.log(`all good from market-controller for ${SELECTION}`))
   .catch(err => console.error(err));

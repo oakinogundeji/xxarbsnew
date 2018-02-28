@@ -15,12 +15,17 @@ const
   EMAIL = process.env.EMAIL,
   PWD = process.env.BETFAIR_PWD,
   EVENT_URL = process.env.BETFAIR_URL,
+  EVENT_LABEL = process.argv[2],
   EMAIL_SELECTOR = '#ssc-liu',
   PWD_SELECTOR = '#ssc-lipw',
   LOGIN_BTN_SELECTOR = '#ssc-lis',
   SELECTIONS_CONTAINER_SELECTOR = 'div.main-mv-runners-list-wrapper',
-  MATCHED_AMOUNT_SELECTOR = '#main-wrapper > div > div.scrollable-panes-height-taker > div > div.page-content.nested-scrollable-pane-parent > div > div.bf-col-xxl-17-24.bf-col-xl-16-24.bf-col-lg-16-24.bf-col-md-15-24.bf-col-sm-14-24.bf-col-14-24.center-column.bfMarketSettingsSpace.bf-module-loading.nested-scrollable-pane-parent > div.scrollable-panes-height-taker.height-taker-helper > div > div.bf-row.main-mv-container > div > bf-main-market > bf-main-marketview > div > div.mv-sticky-header > bf-marketview-header-wrapper > div > div > mv-header > div > div > div.mv-secondary-section > div > div > span.total-matched';
+  MATCHED_AMOUNT_SELECTOR = '#main-wrapper > div > div.scrollable-panes-height-taker > div > div.page-content.nested-scrollable-pane-parent > div > div.bf-col-xxl-17-24.bf-col-xl-16-24.bf-col-lg-16-24.bf-col-md-15-24.bf-col-sm-14-24.bf-col-14-24.center-column.bfMarketSettingsSpace.bf-module-loading.nested-scrollable-pane-parent > div.scrollable-panes-height-taker.height-taker-helper > div > div.bf-row.main-mv-container > div > bf-main-market > bf-main-marketview > div > div.mv-sticky-header > bf-marketview-header-wrapper > div > div > mv-header > div > div > div.mv-secondary-section > div > div > span.total-matched',
+  RACE_START_SELECTOR = '#main-wrapper > div > div.scrollable-panes-height-taker > div > div.page-content.nested-scrollable-pane-parent > div > div.bf-col-xxl-17-24.bf-col-xl-16-24.bf-col-lg-16-24.bf-col-md-15-24.bf-col-sm-14-24.bf-col-14-24.center-column.bfMarketSettingsSpace.bf-module-loading.nested-scrollable-pane-parent > div:nth-child(1) > div > div > div > div > div.event-header > div > span.race-status.default';
 
+const
+  EVENT_TIME_ARRAY = EVENT_LABEL.split('|'),
+  EVENT_TIME_STR = EVENT_TIME_ARRAY[1];
 async function bot() {
   // instantiate browser
   const browser = await P.launch({
@@ -60,6 +65,32 @@ async function bot() {
   // bind to races container and lsiten for updates to , bets etc
   await page.$eval(SELECTIONS_CONTAINER_SELECTOR,
     (target, MATCHED_AMOUNT_SELECTOR) => {
+      // listen for raceStart
+      function raceStarts() {
+        // get target time from eventLabel and present time
+        const
+          targetTime = new Date(EVENT_TIME_STR),
+          presentTime = new Date(),
+          targetTimeValue = targetTime.valueOf(),
+          presentTimeValue = presentTime.valueOf(),
+          delay = targetTimeValue - presentTimeValue;
+
+        async function verifyRaveStarts() {
+          const started = await page.waitForSelector(RACE_START_SELECTOR, {
+            timeout: 60000
+          });
+          if(!!started) {
+            const
+              msg = {alert: 'race has started'},
+              outpt = JSON.stringify(msg);
+            return console.log(output);
+          }
+        }
+        return setTimeout(verifyRaveStarts, delay);
+      }
+
+      raceStarts();
+
       target.addEventListener('DOMSubtreeModified', function (e) {
         // check for most common element of back and lay as source of event
         if(e.target.parentElement.parentElement.parentElement.parentElement.className == 'runner-line') {

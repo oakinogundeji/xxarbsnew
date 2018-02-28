@@ -165,7 +165,7 @@ function spawnBetfairBot() {
 
   console.log(`Spawning Betfair BOT`);
 
-  BETFAIR = spawn('node', ['./betfair-hr.js'], {
+  BETFAIR = spawn('node', ['./betfair-hr.js', EVENT_LABEL], {
     stdio: ['pipe', 'ipc', 'pipe']
   });
 
@@ -173,19 +173,35 @@ function spawnBetfairBot() {
   BETFAIR.on('message', data => {
     console.log('data from Betfair...');
     const dataObj = JSON.parse(data);
-    let target = dataObj.selection;
-    target = target.toLowerCase();
-    target = target.replace(regx, '');
-    const marketControllerArray = selectionsList.filter(val => {
-      let newVal = val.toLowerCase();
-      newVal = newVal.replace(regx, '');
-      return newVal == target;
-    });
-    const marketController = marketControllerArray[0];
-    if(marketController in marketControllers) {
-      return marketControllers[marketController].send({
-        exchange: 'betfair',
-        payload: dataObj});
+    if(!!dataObj.alert) {
+      return selectionsList.forEach(marketController => {
+        if(marketController in marketControllers) {
+          marketControllers[marketController].send({
+            exchange: 'smarkets',
+            alert: 'race started'
+          });
+          return marketControllers[marketController].send({
+            exchange: 'betfair',
+            alert: 'race started'
+          });
+        }
+      });
+    }
+    else {
+      let target = dataObj.selection;
+      target = target.toLowerCase();
+      target = target.replace(regx, '');
+      const marketControllerArray = selectionsList.filter(val => {
+        let newVal = val.toLowerCase();
+        newVal = newVal.replace(regx, '');
+        return newVal == target;
+      });
+      const marketController = marketControllerArray[0];
+      if(marketController in marketControllers) {
+        return marketControllers[marketController].send({
+          exchange: 'betfair',
+          payload: dataObj});
+      }
     }
   });
 
