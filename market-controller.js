@@ -280,7 +280,7 @@ function checkForArbs(exchange, data) {
   console.log(`checkForArbs invoked for ${exchange}`);
   if((exchange == 'betfair') && ((data.betType == 'b0') || (data.betType == 'l0'))) {
     if(data.betType == 'b0') {// check if b0
-      if(!arbTrigger.smarkets.l0.odds) {// check if smarkets l0 odds not initialized
+      if((!arbTrigger.smarkets.l0.odds) || (!arbTrigger.smarkets.l0.liquidity)) {// check if smarkets l0 odds not initialized
         arbTrigger.betfair.b0 = {
           odds: data.odds,
           liquidity: data.liquidity
@@ -373,7 +373,7 @@ function checkForArbs(exchange, data) {
       }
     }
     else if(data.betType == 'l0') {// check if l0
-      if(!arbTrigger.smarkets.b0.odds) {// check if smarkets b0 not initialized
+      if((!arbTrigger.smarkets.b0.odds) || (!arbTrigger.smarkets.b0.liquidity)) {// check if smarkets b0 not initialized
         arbTrigger.betfair.l0 = {
           odds: data.odds,
           liquidity: data.liquidity
@@ -464,7 +464,7 @@ function checkForArbs(exchange, data) {
   }
   else if((exchange == 'smarkets') && ((data.betType == 'b0') || (data.betType == 'l0'))) {
     if(data.betType == 'b0') {// check if b0
-      if(!arbTrigger.betfair.l0.odds) {// check if betfair l0 not initialized
+      if((!arbTrigger.betfair.l0.odds) || (!arbTrigger.betfair.l0.liquidity)) {// check if betfair l0 not initialized
         arbTrigger.smarkets.b0 = {
           odds: data.odds,
           liquidity: data.liquidity
@@ -553,7 +553,7 @@ function checkForArbs(exchange, data) {
       }
     }
     else if(data.betType == 'l0') {// check if l0
-      if(!arbTrigger.betfair.b0.odds) {// check if oppossing cell not initialized
+      if((!arbTrigger.betfair.b0.odds) || (!arbTrigger.betfair.b0.liquidity)) {// check if oppossing cell not initialized
         arbTrigger.smarkets.l0 = {
           odds: data.odds,
           liquidity: data.liquidity
