@@ -64,7 +64,7 @@ async function bot() {
   page.on('console', data => process.send(data.text()));
   // bind to races container and lsiten for updates to , bets etc
   await page.$eval(SELECTIONS_CONTAINER_SELECTOR,
-    (target, MATCHED_AMOUNT_SELECTOR) => {
+    (target, MATCHED_AMOUNT_SELECTOR, EVENT_TIME_STR, RACE_START_SELECTOR) => {
       // listen for raceStart
       function raceStarts() {
         // get target time from eventLabel and present time
@@ -192,7 +192,7 @@ async function bot() {
         }
       }
     );
-  }, MATCHED_AMOUNT_SELECTOR);
+  }, MATCHED_AMOUNT_SELECTOR, EVENT_TIME_STR, RACE_START_SELECTOR);
 }
 
 // execute scraper
