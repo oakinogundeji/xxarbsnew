@@ -320,8 +320,8 @@ function checkForArbs(exchange, data) {
           else {
             targetLiquidity = B0L;
           }
-          let WINAMT = (targetLiquidity * B0O * 0.98) - (targetLiquidity * L0O);
-          let LOSEAMT = ((targetLiquidity * 0.98) - (targetLiquidity)) * (-1);
+          let WINAMT = (targetLiquidity * (B0O-1) * 0.95) - (targetLiquidity * (L0O-1));
+          let LOSEAMT = ((targetLiquidity * 0.95) - (targetLiquidity)) * (-1);
           //WINAMT = Number(WINAMT.toFixed(2));
           WINAMT = accounting.formatMoney(Number(WINAMT.toFixed(2)), "£ ");
           //LOSEAMT = Number(LOSEAMT.toFixed(2));
@@ -413,8 +413,8 @@ function checkForArbs(exchange, data) {
           else {
             targetLiquidity = B0L;
           }
-          let WINAMT = (targetLiquidity * B0O * 0.98) - (targetLiquidity * L0O);
-          let LOSEAMT = ((targetLiquidity * 0.98) - (targetLiquidity)) * (-1);
+          let WINAMT = (targetLiquidity * (B0O-1) * 0.95) - (targetLiquidity * (L0O-1));
+          let LOSEAMT = ((targetLiquidity * 0.95) - (targetLiquidity)) * (-1);
           WINAMT = accounting.formatMoney(Number(WINAMT.toFixed(2)), "£ ");
           LOSEAMT = accounting.formatMoney(Number(LOSEAMT.toFixed(2)), "£ ");
 
@@ -504,7 +504,7 @@ function checkForArbs(exchange, data) {
           else {
             targetLiquidity = B0L;
           }
-          let WINAMT = (targetLiquidity * B0O * 0.98) - (targetLiquidity * L0O);
+          let WINAMT = (targetLiquidity * (B0O-1) * 0.98) - (targetLiquidity * (L0O-1));
           let LOSEAMT = ((targetLiquidity * 0.98) - (targetLiquidity)) * (-1);
           WINAMT = accounting.formatMoney(Number(WINAMT.toFixed(2)), "£ ");
           LOSEAMT = accounting.formatMoney(Number(LOSEAMT.toFixed(2)), "£ ");
@@ -593,7 +593,7 @@ function checkForArbs(exchange, data) {
           else {
             targetLiquidity = B0L;
           }
-          let WINAMT = (targetLiquidity * B0O * 0.98) - (targetLiquidity * L0O);
+          let WINAMT = (targetLiquidity * (B0O-1) * 0.98) - (targetLiquidity * (L0O-1));
           let LOSEAMT = ((targetLiquidity * 0.98) - (targetLiquidity)) * (-1);
           WINAMT = accounting.formatMoney(Number(WINAMT.toFixed(2)), "£ ");
           LOSEAMT = accounting.formatMoney(Number(LOSEAMT.toFixed(2)), "£ ");
