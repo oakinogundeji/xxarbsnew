@@ -359,7 +359,7 @@ async function listenForHREventClose() {
      console.log(`event has NOT ended for ${EVENT_LABEL}...`);
      console.log('closing puppeteer browser and rechecking in 5 mins...');
      await browser.close();
-     return setTimeout(listenForHREventClose, 300000);// 5 mins timer
+     return setTimeout(listenForHREventClose, 30000);// 30 seconds timer
    } else {
      console.log(`event has ended for ${EVENT_LABEL}...`);
      console.log('terminating BOTs and market-controller processes...');
@@ -371,7 +371,16 @@ async function listenForHREventClose() {
      return process.exit(0);
    }
  }
- return checkEventEnd();
+ const
+   EVENT_TIME_ARRAY = EVENT_LABEL.split('|'),
+   EVENT_TIME_STR = EVENT_TIME_ARRAY[1],
+   targetTime = new Date(EVENT_TIME_STR),
+   presentTime = new Date(),
+   targetTimeValue = targetTime.valueOf(),
+   presentTimeValue = presentTime.valueOf(),
+   delay = targetTimeValue - presentTimeValue;
+
+ return setTimeout(checkEventEnd, delay);
 }
 
 async function listenForGenericEventClose() {
@@ -430,7 +439,7 @@ async function listenForGenericEventClose() {
      console.log(`event has NOT ended for ${EVENT_LABEL}...`);
      console.log('closing puppeteer browser and rechecking in 5 mins...');
      await browser.close();
-     return setTimeout(listenForGenericEventClose, 300000);
+     return setTimeout(listenForGenericEventClose, 30000);// 30 seconds timer
    } else {
      console.log(`event has ended for ${EVENT_LABEL}...`);
      console.log('terminating BOTs and market-controller processes...');
@@ -442,7 +451,16 @@ async function listenForGenericEventClose() {
      return process.exit(0);
    }
  }
- return checkEventEnd();
+ const
+   EVENT_TIME_ARRAY = EVENT_LABEL.split('|'),
+   EVENT_TIME_STR = EVENT_TIME_ARRAY[1],
+   targetTime = new Date(EVENT_TIME_STR),
+   presentTime = new Date(),
+   targetTimeValue = targetTime.valueOf(),
+   presentTimeValue = presentTime.valueOf(),
+   delay = targetTimeValue - presentTimeValue;
+
+ return setTimeout(checkEventEnd, delay);
 }
 
 connectToDB()

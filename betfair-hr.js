@@ -75,7 +75,7 @@ async function bot() {
           presentTimeValue = presentTime.valueOf(),
           delay = targetTimeValue - presentTimeValue;
 
-        async function verifyRaveStarts() {
+        async function verifyRaceStarts() {
           const started = await page.waitForSelector(RACE_START_SELECTOR, {
             timeout: 60000
           });
@@ -85,8 +85,11 @@ async function bot() {
               outpt = JSON.stringify(msg);
             return console.log(output);
           }
+          else {
+            return setTimeout(verifyRaceStarts, 10000);
+          }
         }
-        return setTimeout(verifyRaveStarts, delay);
+        return setTimeout(verifyRaceStarts, delay);
       }
 
       raceStarts();

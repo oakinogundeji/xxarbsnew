@@ -8,6 +8,7 @@ const
   accounting = require('accounting'),
   mongoose = require('mongoose'),
   request = require('superagent'),
+  log = require('./helpers').getLogger('APP'),
   SelectionDocModel = require('./models/selection-docs'),
   SelectionArbsDocModel = require('./models/selection-arbs-docs'),
   SELECTION = process.argv[2],
