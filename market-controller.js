@@ -302,7 +302,7 @@ function checkForArbs(exchange, data) {
             B = Object.assign({}, betfairDeltas),
             S = Object.assign({}, smarketsDeltas),
             C_Arb = Object.assign({}, currentArb);
-          log.info('created shallow copies of betfairDeltas and smarketsDeltas...');
+          log.info('created shallow copies of betfairDeltas, smarketsDeltas and currentArb...');
           // update the B.b0 to new values
           B.b0 = {
             odds: B0O,
@@ -330,6 +330,9 @@ function checkForArbs(exchange, data) {
 
           // create arbsDoc object
           const arbsDoc = {
+            BO0,
+            L0O,
+            targetLiquidity,
             selection: SELECTION,
             timestampFrom: data.timestamp,
             timestampTo: '',
@@ -342,34 +345,24 @@ function checkForArbs(exchange, data) {
             odds: B0O,
             liquidity: B0L
           };
-          // save the arbDoc
-          return saveArbs(arbsDoc, C_Arb);
+          if(!!C_Arb.timestampFrom && ((B0O < C_Arb.B0O) || (L0O > C_Arb.L0O) || (targetLiquidity < C_Arb.targetLiquidity))) {// check if conditions exist to end currentArb
+            // end currentArb and save new one
+            const reason = 'delta';
+            return saveArbs(arbsDoc, C_Arb, reason);
+          }
+          else if(!C_Arb.timestampFrom) {// confirm no currentArb
+            // save arbDoc
+            return saveArbs(arbsDoc, null, null);
+          }
         }
         else {// candidate does NOT exist
-          if(!!currentArb) {// check if any arbs in play
-            // create shallow copy of existing currentArb
-            const C_Arb = Object.assign({}, currentArb);
-            log.info('no arbs candidate terminating inplay currentArb due to betfair b0...');
-            // update in memory arbTrigger with new smarkets.l0 values
-            arbTrigger.betfair.b0 = {
-              odds: data.odds,
-              liquidity: data.liquidity
-            };
-            log.info('updated arbTrigger due to no arbs but inplay currentArb via betfair b0...');
-            log.info(arbTrigger);
-            // end in-play arbs
-            const reason = 'delta';
-            return endcurrentArb(data.timestamp, C_Arb, reason);
-          }
-          else {// no currenArbs in play
-            // update in memory arbTrigger with new betfair.b0 values
-            arbTrigger.betfair.b0 = {
-              odds: data.odds,
-              liquidity: data.liquidity
-            };
-            log.info('updated arbTrigger due to no arbs n no inplay currentArb via betfair b0...');
-            return log.info(arbTrigger);
-          }
+          // update in memory arbTrigger with new betfair.b0 values
+          arbTrigger.betfair.b0 = {
+            odds: data.odds,
+            liquidity: data.liquidity
+          };
+          log.info('updated arbTrigger due to no arbs n no inplay currentArb via betfair b0...');
+          return log.info(arbTrigger);
         }
       }
     }
@@ -395,7 +388,7 @@ function checkForArbs(exchange, data) {
             B = Object.assign({}, betfairDeltas),
             S = Object.assign({}, smarketsDeltas),
             C_Arb = Object.assign({}, currentArb);
-          log.info('created shallow copies of betfairDeltas and smarketsDeltas...');
+          log.info('created shallow copies of betfairDeltas, smarketsDeltas and currentArb...');
           // update the B.l0 to new values
           B.l0 = {
             odds: L0O,
@@ -421,6 +414,9 @@ function checkForArbs(exchange, data) {
 
           // create arbsDoc object
           const arbsDoc = {
+            BO0,
+            L0O,
+            targetLiquidity,
             selection: SELECTION,
             timestampFrom: data.timestamp,
             timestampTo: '',
@@ -433,32 +429,21 @@ function checkForArbs(exchange, data) {
             odds: L0O,
             liquidity: L0L
           };
-          // save the arbDoc
-          return saveArbs(arbsDoc, C_Arb);
+          if(!!C_Arb.timestampFrom && ((B0O < C_Arb.B0O) || (L0O > C_Arb.L0O) || (targetLiquidity < C_Arb.targetLiquidity))) {
+            const reason = 'delta';
+            return saveArbs(arbsDoc, C_Arb, reason);
+          }
+          else if(!C_Arb.timestampFrom) {
+            return saveArbs(arbsDoc, null, null);
+          }
         }
         else {// candidate does NOT exist
-          if(!!currentArb) {// check if any arbs in play
-            // create shallow copy of existing currentArb
-            const C_Arb = Object.assign({}, currentArb);
-            log.info('no arbs candidate terminating inplay currentArb due to betfair l0...');
-            // update in memory arbTrigger with new smarkets.l0 values
-            arbTrigger.betfair.l0 = {
-              odds: data.odds,
-              liquidity: data.liquidity
-            };
-            // end in-play arbs
-            const reason = 'delta';
-            return endcurrentArb(data.timestamp, C_Arb, reason);
-          }
-          else {// no currenArbs in play
-            // update in memory arbTrigger with new betfair.l0 values
-            arbTrigger.betfair.l0 = {
-              odds: data.odds,
-              liquidity: data.liquidity
-            };
-            log.info('updated arbTrigger due to no arbs n no inplay currentArb via betfair l0...');
-            return log.info(arbTrigger);
-          }
+          arbTrigger.betfair.l0 = {
+            odds: data.odds,
+            liquidity: data.liquidity
+          };
+          log.info('updated arbTrigger due to no arbs n no inplay currentArb via betfair l0...');
+          return log.info(arbTrigger);
         }
       }
     }
@@ -486,7 +471,7 @@ function checkForArbs(exchange, data) {
             B = Object.assign({}, betfairDeltas),
             S = Object.assign({}, smarketsDeltas),
             C_Arb = Object.assign({}, currentArb);
-          log.info('created shallow copies of betfairDeltas and smarketsDeltas...');
+          log.info('created shallow copies of betfairDeltas, smarketsDeltas and currentArb...');
           // update the B.l0 to new values
           B.l0 = {
             odds: L0O,
@@ -512,6 +497,9 @@ function checkForArbs(exchange, data) {
 
           // create arbsDoc object
           const arbsDoc = {
+            BO0,
+            L0O,
+            targetLiquidity,
             selection: SELECTION,
             timestampFrom: data.timestamp,
             timestampTo: '',
@@ -525,31 +513,24 @@ function checkForArbs(exchange, data) {
             liquidity: B0L
           };
           // save the arbDoc
-          return saveArbs(arbsDoc, C_Arb);
+          if(!!C_Arb.timestampFrom && ((B0O < C_Arb.B0O) || (L0O > C_Arb.L0O) || (targetLiquidity < C_Arb.targetLiquidity))) {// check if conditions exist to end currentArb
+            // end currentArb and save new one
+            const reason = 'delta';
+            return saveArbs(arbsDoc, C_Arb, reason);
+          }
+          else if(!C_Arb.timestampFrom) {// confirm no currentArb
+            // save arbDoc
+            return saveArbs(arbsDoc, null, null);
+          }
         }
         else {// candidate does NOT exist
-          if(!!currentArb) {// check if any arbs in play
-            // create shallow copy of existing currentArb
-            const C_Arb = Object.assign({}, currentArb);
-            log.info('no arbs candidate terminating inplay currentArb due to smarkets b0...');
-            // update in memory arbTrigger with new smarkets.l0 values
-            arbTrigger.smarkets.b0 = {
-              odds: data.odds,
-              liquidity: data.liquidity
-            };
-            // end in-play arbs
-            const reason = 'delta';
-            return endcurrentArb(data.timestamp, C_Arb, reason);
-          }
-          else {// no currenArbs in play
-            // update in memory arbTrigger with new smarkets.b0 values
-            arbTrigger.smarkets.b0 = {
-              odds: data.odds,
-              liquidity: data.liquidity
-            };
-            log.info('updated arbTrigger due to no arbs n no inplay currentArb via smarkets b0...');
-            return log.info(arbTrigger);
-          }
+          // update in memory arbTrigger with new smarkets.b0 values
+          arbTrigger.smarkets.b0 = {
+            odds: data.odds,
+            liquidity: data.liquidity
+          };
+          log.info('updated arbTrigger due to no arbs n no inplay currentArb via smarkets b0...');
+          return log.info(arbTrigger);
         }
       }
     }
@@ -575,7 +556,7 @@ function checkForArbs(exchange, data) {
             B = Object.assign({}, betfairDeltas),
             S = Object.assign({}, smarketsDeltas),
             C_Arb = Object.assign({}, currentArb);
-          log.info('created shallow copies of betfairDeltas and smarketsDeltas...');
+          log.info('created shallow copies of betfairDeltas, smarketsDeltas and currentArb...');
           // update the B.b0 to new values
           B.b0 = {
             odds: B0O,
@@ -601,6 +582,9 @@ function checkForArbs(exchange, data) {
 
           // create arbsDoc object
           const arbsDoc = {
+            BO0,
+            L0O,
+            targetLiquidity,
             selection: SELECTION,
             timestampFrom: data.timestamp,
             timestampTo: '',
@@ -613,40 +597,32 @@ function checkForArbs(exchange, data) {
             odds: L0O,
             liquidity: L0L
           };
-          // save the arbDoc
-          return saveArbs(arbsDoc, C_Arb);
+          if(!!C_Arb.timestampFrom && ((B0O < C_Arb.B0O) || (L0O > C_Arb.L0O) || (targetLiquidity < C_Arb.targetLiquidity))) {// check if conditions exist to end currentArb
+            // end currentArb and save new one
+            const reason = 'delta';
+            return saveArbs(arbsDoc, C_Arb, reason);
+          }
+          else if(!C_Arb.timestampFrom) {// confirm no currentArb
+            // save arbDoc
+            return saveArbs(arbsDoc, null, null);
+          }
         }
         else {// candidate does NOT exist
-          if(!!currentArb) {// check if any arbs in play
-            // create shallow copy of existing currentArb
-            const C_Arb = Object.assign({}, currentArb);
-            log.info('no arbs candidate terminating inplay currentArb due to smarkets l0...');
-            // update in memory arbTrigger with new smarkets.l0 values
-            arbTrigger.smarkets.l0 = {
-              odds: data.odds,
-              liquidity: data.liquidity
-            };
-            // end in-play arbs
-            const reason = 'delta';
-            return endcurrentArb(data.timestamp, C_Arb, reason);
-          }
-          else {// no currentArbs in play
-            // update in memory arbTrigger with new smarkets.l0 values
-            arbTrigger.smarkets.l0 = {
-              odds: data.odds,
-              liquidity: data.liquidity
-            };
-            log.info('updated arbTrigger due to no arbs n no inplay currentArb via smarkets l0...');
-            return log.info(arbTrigger);
-          }
+          // update in memory arbTrigger with new smarkets.l0 values
+          arbTrigger.smarkets.l0 = {
+            odds: data.odds,
+            liquidity: data.liquidity
+          };
+          log.info('updated arbTrigger due to no arbs n no inplay currentArb via smarkets l0...');
+          return log.info(arbTrigger);
         }
       }
     }
   }
 }
 
-function saveArbs(arbsDoc, C_Arb) {
-  if(!currentArb) {// check if first time arbs detected
+function saveArbs(arbsDoc, C_Arb, reason) {
+  if(!reason) {// check if first time arbs detected
     log.info('no currentArb... setting it to received data..');
     currentArb = arbsDoc;
     return saveData(arbsDoc, null);
@@ -662,14 +638,15 @@ function saveArbs(arbsDoc, C_Arb) {
     const duration = (end - start) / 1000;
     let endTime = new Date(arbsDoc.timestampFrom);
     endTime = endTime.toISOString();
-    const reason = 'delta';
     const newSummary = C_Arb.summary + `. Duration: ${duration} seconds. Reason: ${reason}`;
     C_Arb.timestampTo = endTime;
     C_Arb.summary = newSummary;
     // update timestampTo of currentArb
     if(C_Arb.timestampFrom in ARBS) {
       log.info('found C_Arb in ARBS... ready to update');
-      return saveData(C_Arb, true);
+      saveData(C_Arb, true);
+      log.info('updated C_Arb... saving arbsDoc');
+      return saveData(arbsDoc, null);
     }
     else {
       return log.error('C_Arb NOT found in ARBS');
@@ -723,6 +700,9 @@ function saveArbs(arbsDoc, C_Arb) {
           const newErr = new Error(`failed to add new data to selectonArbsDoc`);
           return Promise.reject(newErr);
         }
+      }
+      else {
+        return log.info('new arb saved to memory');
       }
     }
     else {
