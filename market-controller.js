@@ -330,7 +330,7 @@ function checkForArbs(exchange, data) {
 
           // create arbsDoc object
           const arbsDoc = {
-            BO0,
+            B0O,
             L0O,
             targetLiquidity,
             selection: SELECTION,
@@ -414,7 +414,7 @@ function checkForArbs(exchange, data) {
 
           // create arbsDoc object
           const arbsDoc = {
-            BO0,
+            B0O,
             L0O,
             targetLiquidity,
             selection: SELECTION,
@@ -497,7 +497,7 @@ function checkForArbs(exchange, data) {
 
           // create arbsDoc object
           const arbsDoc = {
-            BO0,
+            B0O,
             L0O,
             targetLiquidity,
             selection: SELECTION,
@@ -582,7 +582,7 @@ function checkForArbs(exchange, data) {
 
           // create arbsDoc object
           const arbsDoc = {
-            BO0,
+            B0O,
             L0O,
             targetLiquidity,
             selection: SELECTION,
