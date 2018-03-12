@@ -103,77 +103,67 @@ async function bot() {
             odds,
             liquidity,
             SELECTION;
-           SELECTION = e.target.parentElement.parentElement.parentElement.parentElement.children[0].children[0].children[1].children[0].children[0].children[0].children[2].innerText.split('\n')[0];
-          // check if back or lay
-          if(e.target.parentElement.parentElement.classList[0] == 'back') { // BACK
-            if(e.target.parentElement.parentElement.className == 'back mv-bet-button back-button back-selection-button') {
-              betType = 'b0';
-              if(e.target.className == 'bet-button-price') {
-                odds = e.target.innerText;
-                liquidity = e.target.nextElementSibling.innerText;
-              }
-              else if(e.target.className == 'bet-button-size') {
-                liquidity = e.target.innerText;
-                odds = e.target.previousElementSibling.innerText;
-              }
-            }
-            else if(e.target.parentElement.parentElement.parentElement.nextElementSibling.className == 'bet-buttons back-cell last-back-cell') {
-              betType = 'b1';
-              if(e.target.className == 'bet-button-price') {
-                odds = e.target.innerText;
-                liquidity = e.target.nextElementSibling.innerText;
-              }
-              else if(e.target.className == 'bet-button-size') {
-                liquidity = e.target.innerText;
-                odds = e.target.previousElementSibling.innerText;
-              }
-            }
-            else if(e.target.parentElement.parentElement.parentElement.nextElementSibling.nextElementSibling.className == 'bet-buttons back-cell last-back-cell') {
-               betType = 'b2';
-              if(e.target.className == 'bet-button-price') {
-                odds = e.target.innerText;
-                liquidity = e.target.nextElementSibling.innerText;
-              }
-              else if(e.target.className == 'bet-button-size') {
-                liquidity = e.target.innerText;
-                odds = e.target.previousElementSibling.innerText;
-              }
-            }
+           SELECTION = e.target.parentElement.parentElement.parentElement.parentElement.children[0].children[1].children[1].children[0].children[0].children[0].children[2].children[0].innerText.split('\n')[0];
+          // check 12 conditions
+          if((e.target.className == 'bet-button-price') && (e.target.parentElement.parentElement.parentElement.className == 'bet-buttons back-cell last-back-cell')) {
+            betType = 'b0';
+            odds = e.target.innerText;
+            liquidity = e.target.parentElement.parentElement.children[0].children[1].innerText;
           }
-          else if(e.target.parentElement.parentElement.classList[0] == 'lay') { // LAY
-            if(e.target.parentElement.parentElement.className == 'lay mv-bet-button lay-button lay-selection-button') {
-              betType = 'l0';
-              if(e.target.className == 'bet-button-price') {
-                odds = e.target.innerText;
-                liquidity = e.target.nextElementSibling.innerText;
-              }
-              else if(e.target.className == 'bet-button-size') {
-                liquidity = e.target.innerText;
-                odds = e.target.previousElementSibling.innerText;
-              }
-            }
-            else if(e.target.parentElement.parentElement.parentElement.previousElementSibling.className == 'bet-buttons lay-cell first-lay-cell') {
-              betType = 'l1';
-              if(e.target.className == 'bet-button-price') {
-                odds = e.target.innerText;
-                liquidity = e.target.nextElementSibling.innerText;
-              }
-              else if(e.target.className == 'bet-button-size') {
-                liquidity = e.target.innerText;
-                odds = e.target.previousElementSibling.innerText;
-              }
-            }
-            else if(e.target.parentElement.parentElement.parentElement.previousElementSibling.previousElementSibling.className == 'bet-buttons lay-cell first-lay-cell') {
-              betType = 'l2';
-              if(e.target.className == 'bet-button-price') {
-                odds = e.target.innerText;
-                liquidity = e.target.nextElementSibling.innerText;
-              }
-              else if(e.target.className == 'bet-button-size') {
-                liquidity = e.target.innerText;
-                odds = e.target.previousElementSibling.innerText;
-              }
-            }
+          else if((e.target.className == 'bet-button-price') && (e.target.parentElement.parentElement.parentElement.className == 'bet-buttons lay-cell first-lay-cell')) {
+            betType = 'l0';
+            odds = e.target.innerText;
+            liquidity = e.target.parentElement.parentElement.children[0].children[1].innerText;
+          }
+          else if((e.target.className == 'bet-button-price') && (e.target.parentElement.parentElement.parentElement.nextElementSibling.className == 'bet-buttons back-cell last-back-cell')) {
+            betType = 'b1';
+            odds = e.target.innerText;
+            liquidity = e.target.parentElement.parentElement.children[0].children[1].innerText;
+          }
+          else if((e.target.className == 'bet-button-price') && (e.target.parentElement.parentElement.parentElement.nextElementSibling.className == 'bet-buttons lay-cell first-lay-cell')) {
+            betType = 'l1';
+            odds = e.target.innerText;
+            liquidity = e.target.parentElement.parentElement.children[0].children[1].innerText;
+          }
+          else if((e.target.className == 'bet-button-price') && (e.target.parentElement.parentElement.parentElement.nextElementSibling.nextElementSibling.className == 'bet-buttons back-cell last-back-cell')) {
+            betType = 'b2';
+            odds = e.target.innerText;
+            liquidity = e.target.parentElement.parentElement.children[0].children[1].innerText;
+          }
+          else if((e.target.className == 'bet-button-price') && (e.target.parentElement.parentElement.parentElement.nextElementSibling.nextElementSibling.className == 'bet-buttons lay-cell first-lay-cell')) {
+            betType = 'l2';
+            odds = e.target.innerText;
+            liquidity = e.target.parentElement.parentElement.children[0].children[1].innerText;
+          }
+          else if((e.target.className == 'bet-button-size') && (e.target.parentElement.parentElement.parentElement.className == 'bet-buttons back-cell last-back-cell')) {
+            betType = 'b0';
+            odds = e.target.parentElement.children[0].innerText;
+            liquidity = e.target.innerText;
+          }
+          else if((e.target.className == 'bet-button-size') && (e.target.parentElement.parentElement.parentElement.className == 'bet-buttons lay-cell first-lay-cell')) {
+            betType = 'l0';
+            odds = e.target.parentElement.children[0].innerText;
+            liquidity = e.target.innerText;
+          }
+          else if((e.target.className == 'bet-button-size') && (e.target.parentElement.parentElement.parentElement.nextElementSibling.className == 'bet-buttons back-cell last-back-cell')) {
+            betType = 'b1';
+            odds = e.target.parentElement.children[0].innerText;
+            liquidity = e.target.innerText;
+          }
+          else if((e.target.className == 'bet-button-size') && (e.target.parentElement.parentElement.parentElement.nextElementSibling.className == 'bet-buttons lay-cell first-lay-cell')) {
+            betType = 'l1';
+            odds = e.target.parentElement.children[0].innerText;
+            liquidity = e.target.innerText;
+          }
+          else if((e.target.className == 'bet-button-size') && (e.target.parentElement.parentElement.parentElement.nextElementSibling.nextElementSibling.className == 'bet-buttons back-cell last-back-cell')) {
+            betType = 'b2';
+            odds = e.target.parentElement.children[0].innerText;
+            liquidity = e.target.innerText;
+          }
+          else if((e.target.className == 'bet-button-size') && (e.target.parentElement.parentElement.parentElement.nextElementSibling.nextElementSibling.className == 'bet-buttons lay-cell first-lay-cell')) {
+            betType = 'l2';
+            odds = e.target.parentElement.children[0].innerText;
+            liquidity = e.target.innerText;
           }
           if(!!betType && !!odds && !!liquidity && !!SELECTION) {
             let timestamp = new Date();
