@@ -338,7 +338,7 @@ function checkForArbs(exchange, data) {
             selection: SELECTION,
             timestampFrom: data.timestamp,
             timestampTo: '',
-            summary: `Bet ${SELECTION} on Betfair for £${targetLiquidity} at ${targetOdds}, Lay on Smarkets for £${targetLiquidity} at ${targetOdds}. Win Amount: ${WINAMT}. Lose Amount: ${LOSEAMT}`,
+            summary: `Bet ${SELECTION} on Betfair for £${targetLiquidity} at ${targetOdds}, Lay on Smarkets for £${targetLiquidity} at ${targetOdds}. Win: ${WINAMT}. Lose: ${LOSEAMT}`,
             b: B,
             s: S
           };
@@ -424,7 +424,7 @@ function checkForArbs(exchange, data) {
             selection: SELECTION,
             timestampFrom: data.timestamp,
             timestampTo: '',
-            summary: `Bet ${SELECTION} on Smarkets for £${targetLiquidity} at ${targetOdds}, Lay on Betfair for £${targetLiquidity} at ${targetOdds}. Win Amount: ${WINAMT}. Lose Amount: ${LOSEAMT}`,
+            summary: `Bet ${SELECTION} on Smarkets for £${targetLiquidity} at ${targetOdds}, Lay on Betfair for £${targetLiquidity} at ${targetOdds}. Win: ${WINAMT}. Lose: ${LOSEAMT}`,
             b: B,
             s: S
           };
@@ -509,7 +509,7 @@ function checkForArbs(exchange, data) {
             selection: SELECTION,
             timestampFrom: data.timestamp,
             timestampTo: '',
-            summary: `Bet ${SELECTION} on Smarkets for £${targetLiquidity} at ${targetOdds}, Lay on Betfair for £${targetLiquidity} at ${targetOdds}. Win Amount: ${WINAMT}. Lose Amount: ${LOSEAMT}`,
+            summary: `Bet ${SELECTION} on Smarkets for £${targetLiquidity} at ${targetOdds}, Lay on Betfair for £${targetLiquidity} at ${targetOdds}. Win: ${WINAMT}. Lose: ${LOSEAMT}`,
             b: B,
             s: S
           };
@@ -596,7 +596,7 @@ function checkForArbs(exchange, data) {
             selection: SELECTION,
             timestampFrom: data.timestamp,
             timestampTo: '',
-            summary: `Bet ${SELECTION} on Betfair for £${targetLiquidity} at ${targetOdds}, Lay on Smarkets for £${targetLiquidity} at ${targetOdds}. Win Amount: ${WINAMT}. Lose Amount: ${LOSEAMT}`,
+            summary: `Bet ${SELECTION} on Betfair for £${targetLiquidity} at ${targetOdds}, Lay on Smarkets for £${targetLiquidity} at ${targetOdds}. Win: ${WINAMT}. Lose: ${LOSEAMT}`,
             b: B,
             s: S
           };
