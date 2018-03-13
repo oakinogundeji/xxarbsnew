@@ -72,7 +72,7 @@ async function getSelections() {
     if(flag == 'HR') {
       targets.filter(target => {
         if(target.parentElement.nextElementSibling.children[0].children[0].className == 'price-section') {
-          const selection = target.children[1].children[0].innerText;
+          const selection = target.children[1].children[0].children[0].innerText;
           console.log(`selection info for HR: ${selection}`);
           return selectionsList.push(selection);
         }
