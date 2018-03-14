@@ -295,7 +295,7 @@ function checkForArbs(exchange, data) {
           B0L = data.liquidity,
           L0O = arbTrigger.smarkets.l0.odds,
           L0L = arbTrigger.smarkets.l0.liquidity;
-        if((B0O > L0O) && (((B0O - 1) / (L0O - 1)) > 1.02)) {// candidate exists
+        if((B0O > L0O) && (((B0O - 1) / (L0O - 1)) > 1.05)) {// candidate exists
           log.info('candidate arb seen triggered by betfair b0...');
           // create shallow copy of betfairDeltas, smarketsDeltas and currentArb
           let
@@ -317,20 +317,26 @@ function checkForArbs(exchange, data) {
           let
             targetLiquidity,
             maxLiquidity;
-          if(B0L > L0L) {
+          if((B0L > L0L) && (L0L < 10)) {
             targetLiquidity = L0L;
             maxLiquidity = B0L;
           }
-          else {
+          else if((L0L > B0L) && (B0L < 10)) {
             targetLiquidity = B0L;
             maxLiquidity = L0L;
           }
+          if(targetLiquidity > 10) {
+            tempVal = targetLiquidity;
+            targetLiquidity = 10;
+            maxLiquidity = tempVal;
+          }
           let WINAMT = (targetLiquidity * (B0O - 1) * 0.95) - (targetLiquidity * (L0O - 1));
-          let LOSEAMT = ((targetLiquidity * 0.95) - (targetLiquidity)) * (-1);
+          let LOSEAMT = ((targetLiquidity * 0.98) - (targetLiquidity)) * (-1);
           //WINAMT = Number(WINAMT.toFixed(2));
           WINAMT = accounting.formatMoney(Number(WINAMT.toFixed(2)), "£ ");
           //LOSEAMT = Number(LOSEAMT.toFixed(2));
           LOSEAMT = accounting.formatMoney(Number(LOSEAMT.toFixed(2)), "£ ");
+          maxLiquidity = accounting.formatMoney(Number(maxLiquidity.toFixed(2)), "£ ");
 
           const targetOdds = (B0O + L0O) / 2;
 
@@ -342,7 +348,7 @@ function checkForArbs(exchange, data) {
             selection: SELECTION,
             timestampFrom: data.timestamp,
             timestampTo: '',
-            summary: `Bet ${SELECTION} on Betfair for £${targetLiquidity} at ${targetOdds}, Lay on Smarkets for £${targetLiquidity} at ${targetOdds}. Win: ${WINAMT}. Lose: ${LOSEAMT}, Max: ${maxLiquidity}`,
+            summary: `Bet ${SELECTION} on Betfair for £${targetLiquidity} at ${targetOdds}, Lay on Smarkets for £${targetLiquidity} at ${targetOdds}. Win: ${WINAMT}. Lose: ${LOSEAMT}, Max: ${maxLiquidity}. B0O: ${B0O}, L0O: ${L0O}`,
             b: B,
             s: S
           };
@@ -409,18 +415,24 @@ function checkForArbs(exchange, data) {
           let
             targetLiquidity,
             maxLiquidity;
-          if(B0L > L0L) {
+          if((B0L > L0L) && (L0L < 10)) {
             targetLiquidity = L0L;
             maxLiquidity = B0L;
           }
-          else {
+          else if((L0L > B0L) && (B0L < 10)) {
             targetLiquidity = B0L;
             maxLiquidity = L0L;
           }
-          let WINAMT = (targetLiquidity * (B0O - 1) * 0.95) - (targetLiquidity * (L0O - 1));
-          let LOSEAMT = ((targetLiquidity * 0.95) - (targetLiquidity)) * (-1);
+          if(targetLiquidity > 10) {
+            tempVal = targetLiquidity;
+            targetLiquidity = 10;
+            maxLiquidity = tempVal;
+          }
+          let WINAMT = (targetLiquidity * (B0O - 1) * 0.98) - (targetLiquidity * (L0O - 1));
+          let LOSEAMT = ((targetLiquidity * 0.98) - (targetLiquidity)) * (-1);
           WINAMT = accounting.formatMoney(Number(WINAMT.toFixed(2)), "£ ");
           LOSEAMT = accounting.formatMoney(Number(LOSEAMT.toFixed(2)), "£ ");
+          maxLiquidity = accounting.formatMoney(Number(maxLiquidity.toFixed(2)), "£ ");
 
           const targetOdds = (B0O + L0O) / 2;
 
@@ -432,7 +444,7 @@ function checkForArbs(exchange, data) {
             selection: SELECTION,
             timestampFrom: data.timestamp,
             timestampTo: '',
-            summary: `Bet ${SELECTION} on Smarkets for £${targetLiquidity} at ${targetOdds}, Lay on Betfair for £${targetLiquidity} at ${targetOdds}. Win: ${WINAMT}. Lose: ${LOSEAMT}, Max: ${maxLiquidity}`,
+            summary: `Bet ${SELECTION} on Smarkets for £${targetLiquidity} at ${targetOdds}, Lay on Betfair for £${targetLiquidity} at ${targetOdds}. Win: ${WINAMT}. Lose: ${LOSEAMT}, Max: ${maxLiquidity}. B0O: ${B0O}, L0O: ${L0O}`,
             b: B,
             s: S
           };
@@ -498,18 +510,24 @@ function checkForArbs(exchange, data) {
           let
             targetLiquidity,
             maxLiquidity;
-          if(B0L > L0L) {
+          if((B0L > L0L) && (L0L < 10)) {
             targetLiquidity = L0L;
             maxLiquidity = B0L;
           }
-          else {
+          else if((L0L > B0L) && (B0L < 10)) {
             targetLiquidity = B0L;
             maxLiquidity = L0L;
+          }
+          if(targetLiquidity > 10) {
+            tempVal = targetLiquidity;
+            targetLiquidity = 10;
+            maxLiquidity = tempVal;
           }
           let WINAMT = (targetLiquidity * (B0O - 1) * 0.98) - (targetLiquidity * (L0O - 1));
           let LOSEAMT = ((targetLiquidity * 0.98) - (targetLiquidity)) * (-1);
           WINAMT = accounting.formatMoney(Number(WINAMT.toFixed(2)), "£ ");
           LOSEAMT = accounting.formatMoney(Number(LOSEAMT.toFixed(2)), "£ ");
+          maxLiquidity = accounting.formatMoney(Number(maxLiquidity.toFixed(2)), "£ ");
 
           const targetOdds = (B0O + L0O) / 2;
 
@@ -521,7 +539,7 @@ function checkForArbs(exchange, data) {
             selection: SELECTION,
             timestampFrom: data.timestamp,
             timestampTo: '',
-            summary: `Bet ${SELECTION} on Smarkets for £${targetLiquidity} at ${targetOdds}, Lay on Betfair for £${targetLiquidity} at ${targetOdds}. Win: ${WINAMT}. Lose: ${LOSEAMT}, Max: ${maxLiquidity}`,
+            summary: `Bet ${SELECTION} on Smarkets for £${targetLiquidity} at ${targetOdds}, Lay on Betfair for £${targetLiquidity} at ${targetOdds}. Win: ${WINAMT}. Lose: ${LOSEAMT}, Max: ${maxLiquidity}. B0O: ${B0O}, L0O: ${L0O}`,
             b: B,
             s: S
           };
@@ -567,7 +585,7 @@ function checkForArbs(exchange, data) {
           L0L = data.liquidity,
           B0O = arbTrigger.betfair.b0.odds,
           B0L = arbTrigger.betfair.b0.liquidity;
-        if((B0O > L0O) && (((B0O - 1) / (L0O - 1)) > 1.02)) {// candidate exists
+        if((B0O > L0O) && (((B0O - 1) / (L0O - 1)) > 1.05)) {// candidate exists
           log.info('candidate arb seen triggered by smarkets l0...');
           // create shallow copy of betfairDeltas, smarketsDeltas and currentArb
           let
@@ -589,18 +607,24 @@ function checkForArbs(exchange, data) {
           let
             targetLiquidity,
             maxLiquidity;
-          if(B0L > L0L) {
+          if((B0L > L0L) && (L0L < 10)) {
             targetLiquidity = L0L;
             maxLiquidity = B0L;
           }
-          else {
+          else if((L0L > B0L) && (B0L < 10)) {
             targetLiquidity = B0L;
             maxLiquidity = L0L;
           }
-          let WINAMT = (targetLiquidity * (B0O - 1) * 0.98) - (targetLiquidity * (L0O - 1));
+          if(targetLiquidity > 10) {
+            tempVal = targetLiquidity;
+            targetLiquidity = 10;
+            maxLiquidity = tempVal;
+          }
+          let WINAMT = (targetLiquidity * (B0O - 1) * 0.95) - (targetLiquidity * (L0O - 1));
           let LOSEAMT = ((targetLiquidity * 0.98) - (targetLiquidity)) * (-1);
           WINAMT = accounting.formatMoney(Number(WINAMT.toFixed(2)), "£ ");
           LOSEAMT = accounting.formatMoney(Number(LOSEAMT.toFixed(2)), "£ ");
+          maxLiquidity = accounting.formatMoney(Number(maxLiquidity.toFixed(2)), "£ ");
 
           const targetOdds = (B0O + L0O) / 2;
 
@@ -612,7 +636,7 @@ function checkForArbs(exchange, data) {
             selection: SELECTION,
             timestampFrom: data.timestamp,
             timestampTo: '',
-            summary: `Bet ${SELECTION} on Betfair for £${targetLiquidity} at ${targetOdds}, Lay on Smarkets for £${targetLiquidity} at ${targetOdds}. Win: ${WINAMT}. Lose: ${LOSEAMT}, Max: ${maxLiquidity}`,
+            summary: `Bet ${SELECTION} on Betfair for £${targetLiquidity} at ${targetOdds}, Lay on Smarkets for £${targetLiquidity} at ${targetOdds}. Win: ${WINAMT}. Lose: ${LOSEAMT}, Max: ${maxLiquidity}. B0O: ${B0O}, L0O: ${L0O}`,
             b: B,
             s: S
           };
