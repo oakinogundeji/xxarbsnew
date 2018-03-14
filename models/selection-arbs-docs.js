@@ -18,6 +18,15 @@ const SelectionArbsDocSchema = mongoose.Schema({
   },
   arbs: [
     {
+      B0O: {
+        type: Number
+      },
+      L0O: {
+        type: Number
+      },
+      targetLiquidity: {
+        type: Number
+      },
       selection: {
         type: String,
         required: true
@@ -28,143 +37,116 @@ const SelectionArbsDocSchema = mongoose.Schema({
       },
       timestampTo: {
         type: String,
-        default: null
+        default: ''
       },
       b: {
         b0: {
           odds: {
-            type: Number,
-            required: true
+            type: Number
           },
           liquidity: {
-            type: Number,
-            required: true
+            type: Number
           }
         },
         l0: {
           odds: {
-            type: Number,
-            required: true
+            type: Number
           },
           liquidity: {
-            type: Number,
-            required: true
+            type: Number
           }
         },
         b1: {
           odds: {
-            type: Number,
-            required: true
+            type: Number
           },
           liquidity: {
-            type: Number,
-            required: true
+            type: Number
           }
         },
         l1: {
           odds: {
-            type: Number,
-            required: true
+            type: Number
           },
           liquidity: {
-            type: Number,
-            required: true
+            type: Number
           }
         },
         b2: {
           odds: {
-            type: Number,
-            required: true
+            type: Number
           },
           liquidity: {
-            type: Number,
-            required: true
+            type: Number
           }
         },
         l2: {
           odds: {
-            type: Number,
-            required: true
+            type: Number
           },
           liquidity: {
-            type: Number,
-            required: true
+            type: Number
           }
         },
         matchedAmount: {
-          type: Number,
-          required: true
+          type: Number
         }
       },
       s: {
         b0: {
           odds: {
-            type: Number,
-            required: true
+            type: Number
           },
           liquidity: {
-            type: Number,
-            required: true
+            type: Number
           }
         },
         l0: {
           odds: {
-            type: Number,
-            required: true
+            type: Number
           },
           liquidity: {
-            type: Number,
-            required: true
+            type: Number
           }
         },
         b1: {
           odds: {
-            type: Number,
-            required: true
+            type: Number
           },
           liquidity: {
-            type: Number,
-            required: true
+            type: Number
           }
         },
         l1: {
           odds: {
-            type: Number,
-            required: true
+            type: Number
           },
           liquidity: {
-            type: Number,
-            required: true
+            type: Number
           }
         },
         b2: {
           odds: {
-            type: Number,
-            required: true
+            type: Number
           },
           liquidity: {
-            type: Number,
-            required: true
+            type: Number
           }
         },
         l2: {
           odds: {
-            type: Number,
-            required: true
+            type: Number
           },
           liquidity: {
-            type: Number,
-            required: true
+            type: Number
           }
         },
         matchedAmount: {
-          type: Number,
-          required: true
+          type: Number
         }
       },
       summary: {
-        type: String,
-        required: true
+        type: String
       }
     }
   ]
