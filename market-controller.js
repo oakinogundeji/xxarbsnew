@@ -680,6 +680,7 @@ function saveArbs(arbsDoc, C_Arb, reason) {
           log.info(addedNewArbsDocData);
           const used = process.memoryUsage().heapUsed / 1024 / 1024;
           const BODY = `${arbsDoc.summary}. TimestampFrom: ${arbsDoc.timestampFrom}`;
+          currentArb = null;
           return request
             .post(ENDPOINT)
             .set('Accept', 'application/json')
@@ -705,6 +706,7 @@ function saveArbs(arbsDoc, C_Arb, reason) {
         catch(err) {
           log.error('failed to add new data to selectonArbsDoc...');
           log.error(err);
+          currentArb = null;
           const newErr = new Error(`failed to add new data to selectonArbsDoc`);
           return Promise.reject(newErr);
         }
