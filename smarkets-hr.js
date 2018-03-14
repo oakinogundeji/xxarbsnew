@@ -82,7 +82,7 @@ async function bot() {
         if((e.target.parentElement.className == 'formatted-currency numeric-value') && (e.target.parentElement.parentElement.parentElement.className == 'level-0 tick') && (e.target.parentElement.parentElement.parentElement.parentElement.className == 'prices offers')) {
           betType = 'b0';
           odds = e.target.parentElement.parentElement.parentElement.children[0].innerText;
-          liquidity =e.target.parentElement.innerText;
+          liquidity = e.target.parentElement.innerText;
           SELECTION = e.target.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.children[0].children[0].children[1].children[0].children[0].innerText;
         }
         else if((e.target.parentElement.className == 'formatted-currency numeric-value') && (e.target.parentElement.parentElement.parentElement.className == 'level-0 tick') && (e.target.parentElement.parentElement.parentElement.parentElement.className == 'prices bids')) {
