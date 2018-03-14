@@ -313,13 +313,17 @@ function checkForArbs(exchange, data) {
             odds: L0O,
             liquidity: L0L
           };
-          // derive target liquidity and win amount
-          let targetLiquidity;
+          // derive target liquidity, max liquidity, win amount and lose amount
+          let
+            targetLiquidity,
+            maxLiquidity;
           if(B0L > L0L) {
             targetLiquidity = L0L;
+            maxLiquidity = B0L;
           }
           else {
             targetLiquidity = B0L;
+            maxLiquidity = L0L;
           }
           let WINAMT = (targetLiquidity * (B0O - 1) * 0.95) - (targetLiquidity * (L0O - 1));
           let LOSEAMT = ((targetLiquidity * 0.95) - (targetLiquidity)) * (-1);
@@ -338,7 +342,7 @@ function checkForArbs(exchange, data) {
             selection: SELECTION,
             timestampFrom: data.timestamp,
             timestampTo: '',
-            summary: `Bet ${SELECTION} on Betfair for £${targetLiquidity} at ${targetOdds}, Lay on Smarkets for £${targetLiquidity} at ${targetOdds}. Win: ${WINAMT}. Lose: ${LOSEAMT}`,
+            summary: `Bet ${SELECTION} on Betfair for £${targetLiquidity} at ${targetOdds}, Lay on Smarkets for £${targetLiquidity} at ${targetOdds}. Win: ${WINAMT}. Lose: ${LOSEAMT}, Max: ${maxLiquidity}`,
             b: B,
             s: S
           };
@@ -401,13 +405,17 @@ function checkForArbs(exchange, data) {
             odds: B0O,
             liquidity: B0L
           };
-          // derive target liquidity and win amount
-          let targetLiquidity;
+          // derive target liquidity, max liquidity, win amount and lose amount
+          let
+            targetLiquidity,
+            maxLiquidity;
           if(B0L > L0L) {
             targetLiquidity = L0L;
+            maxLiquidity = B0L;
           }
           else {
             targetLiquidity = B0L;
+            maxLiquidity = L0L;
           }
           let WINAMT = (targetLiquidity * (B0O - 1) * 0.95) - (targetLiquidity * (L0O - 1));
           let LOSEAMT = ((targetLiquidity * 0.95) - (targetLiquidity)) * (-1);
@@ -424,7 +432,7 @@ function checkForArbs(exchange, data) {
             selection: SELECTION,
             timestampFrom: data.timestamp,
             timestampTo: '',
-            summary: `Bet ${SELECTION} on Smarkets for £${targetLiquidity} at ${targetOdds}, Lay on Betfair for £${targetLiquidity} at ${targetOdds}. Win: ${WINAMT}. Lose: ${LOSEAMT}`,
+            summary: `Bet ${SELECTION} on Smarkets for £${targetLiquidity} at ${targetOdds}, Lay on Betfair for £${targetLiquidity} at ${targetOdds}. Win: ${WINAMT}. Lose: ${LOSEAMT}, Max: ${maxLiquidity}`,
             b: B,
             s: S
           };
@@ -486,13 +494,17 @@ function checkForArbs(exchange, data) {
             odds: B0O,
             liquidity: B0L
           };
-          // derive target liquidity and win amount
-          let targetLiquidity;
+          // derive target liquidity, max liquidity, win amount and lose amount
+          let
+            targetLiquidity,
+            maxLiquidity;
           if(B0L > L0L) {
             targetLiquidity = L0L;
+            maxLiquidity = B0L;
           }
           else {
             targetLiquidity = B0L;
+            maxLiquidity = L0L;
           }
           let WINAMT = (targetLiquidity * (B0O - 1) * 0.98) - (targetLiquidity * (L0O - 1));
           let LOSEAMT = ((targetLiquidity * 0.98) - (targetLiquidity)) * (-1);
@@ -509,7 +521,7 @@ function checkForArbs(exchange, data) {
             selection: SELECTION,
             timestampFrom: data.timestamp,
             timestampTo: '',
-            summary: `Bet ${SELECTION} on Smarkets for £${targetLiquidity} at ${targetOdds}, Lay on Betfair for £${targetLiquidity} at ${targetOdds}. Win: ${WINAMT}. Lose: ${LOSEAMT}`,
+            summary: `Bet ${SELECTION} on Smarkets for £${targetLiquidity} at ${targetOdds}, Lay on Betfair for £${targetLiquidity} at ${targetOdds}. Win: ${WINAMT}. Lose: ${LOSEAMT}, Max: ${maxLiquidity}`,
             b: B,
             s: S
           };
@@ -573,13 +585,17 @@ function checkForArbs(exchange, data) {
             odds: L0O,
             liquidity: L0L
           };
-          // derive target liquidity and win amount
-          let targetLiquidity;
+          // derive target liquidity, max liquidity, win amount and lose amount
+          let
+            targetLiquidity,
+            maxLiquidity;
           if(B0L > L0L) {
             targetLiquidity = L0L;
+            maxLiquidity = B0L;
           }
           else {
             targetLiquidity = B0L;
+            maxLiquidity = L0L;
           }
           let WINAMT = (targetLiquidity * (B0O - 1) * 0.98) - (targetLiquidity * (L0O - 1));
           let LOSEAMT = ((targetLiquidity * 0.98) - (targetLiquidity)) * (-1);
@@ -596,7 +612,7 @@ function checkForArbs(exchange, data) {
             selection: SELECTION,
             timestampFrom: data.timestamp,
             timestampTo: '',
-            summary: `Bet ${SELECTION} on Betfair for £${targetLiquidity} at ${targetOdds}, Lay on Smarkets for £${targetLiquidity} at ${targetOdds}. Win: ${WINAMT}. Lose: ${LOSEAMT}`,
+            summary: `Bet ${SELECTION} on Betfair for £${targetLiquidity} at ${targetOdds}, Lay on Smarkets for £${targetLiquidity} at ${targetOdds}. Win: ${WINAMT}. Lose: ${LOSEAMT}, Max: ${maxLiquidity}`,
             b: B,
             s: S
           };
@@ -652,6 +668,7 @@ function saveArbs(arbsDoc, C_Arb, reason) {
     // update timestampTo of currentArb
     if(C_Arb.timestampFrom in ARBS) {
       log.info('found C_Arb in ARBS... ready to update');
+      currentArb = arbsDoc;
       saveData(C_Arb, true);
       log.info('updated C_Arb... saving arbsDoc');
       return saveData(arbsDoc, null);
@@ -680,7 +697,6 @@ function saveArbs(arbsDoc, C_Arb, reason) {
           log.info(addedNewArbsDocData);
           const used = process.memoryUsage().heapUsed / 1024 / 1024;
           const BODY = `${arbsDoc.summary}. TimestampFrom: ${arbsDoc.timestampFrom}`;
-          currentArb = null;
           return request
             .post(ENDPOINT)
             .set('Accept', 'application/json')
@@ -706,7 +722,6 @@ function saveArbs(arbsDoc, C_Arb, reason) {
         catch(err) {
           log.error('failed to add new data to selectonArbsDoc...');
           log.error(err);
-          currentArb = null;
           const newErr = new Error(`failed to add new data to selectonArbsDoc`);
           return Promise.reject(newErr);
         }
