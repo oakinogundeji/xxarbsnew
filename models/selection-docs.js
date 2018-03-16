@@ -34,7 +34,7 @@ const SelectionDocSchema = mongoose.Schema({
       required: true
     },
     timestamp: {
-      type: Date,
+      type: String,
       required: true
     }
   }],
@@ -56,7 +56,7 @@ const SelectionDocSchema = mongoose.Schema({
       required: true
     },
     timestamp: {
-      type: Date,
+      type: String,
       required: true
     }
   }]
