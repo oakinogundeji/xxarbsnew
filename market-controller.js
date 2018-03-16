@@ -295,7 +295,7 @@ function checkForArbs(exchange, data) {
           B0L = data.liquidity,
           L0O = arbTrigger.smarkets.l0.odds,
           L0L = arbTrigger.smarkets.l0.liquidity;
-        if((B0O > L0O) && ((B0O / L0O) > 1.02)) {// candidate exists
+        if(((B0O - 1) / (L0O - 1)) > 1.02) {// candidate exists
           log.info('candidate arb seen triggered by betfair b0...');
           // create shallow copy of betfairDeltas, smarketsDeltas and currentArb
           let
@@ -387,7 +387,7 @@ function checkForArbs(exchange, data) {
           L0L = data.liquidity,
           B0O = arbTrigger.smarkets.b0.odds,
           B0L = arbTrigger.smarkets.b0.liquidity;
-        if((B0O > L0O) && ((B0O / L0O) > 1.02)) {// candidate exists
+        if(((B0O - 1) / (L0O - 1)) > 1.02) {// candidate exists
           log.info('candidate arb seen triggered by betfair l0...');
           // create shallow copy of betfairDeltas, smarketsDeltas and currentArb
           let
@@ -476,7 +476,7 @@ function checkForArbs(exchange, data) {
           B0L = data.liquidity,
           L0O = arbTrigger.betfair.l0.odds,
           L0L = arbTrigger.betfair.l0.liquidity;
-        if((B0O > L0O) && ((B0O / L0O) > 1.02)) {// candidate exists
+        if(((B0O - 1) / (L0O - 1)) > 1.02) {// candidate exists
           log.info('candidate arb seen triggered by smarkets b0...');
           // create shallow copy of betfairDeltas, smarketsDeltas and currentArb
           let
@@ -567,7 +567,7 @@ function checkForArbs(exchange, data) {
           L0L = data.liquidity,
           B0O = arbTrigger.betfair.b0.odds,
           B0L = arbTrigger.betfair.b0.liquidity;
-        if((B0O > L0O) && ((B0O / L0O) > 1.02)) {// candidate exists
+        if(((B0O - 1) / (L0O - 1)) > 1.02) {// candidate exists
           log.info('candidate arb seen triggered by smarkets l0...');
           // create shallow copy of betfairDeltas, smarketsDeltas and currentArb
           let
