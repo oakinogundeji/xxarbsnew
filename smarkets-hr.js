@@ -21,7 +21,15 @@ const
   SHOW_PWD_SELECTOR = '#login-page > div.form-page-content > form > div:nth-child(2) > div > div > span.after > button',
   SIGNIN_BTN_SELECTOR = '#login-page > div.form-page-content > form > button',
   SELECTIONS_CONTAINER_SELECTOR = 'ul.contracts',
-  MATCHED_AMOUNT_SELECTOR = 'div.contract-group-stats > span > span > span';
+  MATCHED_AMOUNT_SELECTOR = 'div.contract-group-stats > span > span > span',
+  RUNNERS_SELECTOR = 'div.contract-info',
+  BET_WIDGET_SELECTOR = 'div.bet-widget-wrapper',
+  BET_HEADER_SELECTOR = 'div.bet-header',
+  UP_ARROW_SELECTOR = 'div.bet-widget-main-content > div > div:nth-child(1) > div > div.param-input_ticks > a.param-tick.up',
+  PRICE_INPUT_SELECTOR = 'div:nth-child(1) > div > div.param > span > input',
+  SIZE_INPUT_SELECTOR = 'div:nth-child(2) > div > div.param > span > input',
+  SUBMIT_BET_SELECTOR = 'button.confirm-bet-button',
+  CONFIRM_SUBMIT_SELECTOR = 'div.bet-widget-wrapper > form > div > div.bet-widget-main-row > div.bet-widget-main-row-right > div.bet-submit > button';
 
 
 // define scraper function
@@ -171,6 +179,121 @@ async function bot() {
       }
     );
   }, MATCHED_AMOUNT_SELECTOR);
+
+  // implement PLACEBET feature
+
+  async function placeBet(SELECTION, TYPE, TARGET_ODDS, TARGET_LIQUIDITY) {
+    // create blank page
+    const page = await browser.newPage();
+    // set viewport to 1366*768
+    await page.setViewport({width: 1366, height: 768});
+    // set the user agent
+    await page.setUserAgent('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko)');
+    // navigate to EVENT_URL
+    await page.goto(EVENT_URL, {
+      waitUntil: 'networkidle2',
+      timeout: 180000
+    });
+    // ensure runners selector available
+    await page.waitForSelector(RUNNERS_SELECTOR, {
+      timeout: 180000
+    });
+
+    // get RUNNERS
+    await page.$$eval(RUNNERS_SELECTOR, (targets, SELECTION, TYPE) => {
+      try {
+        targets.filter(target => {// filter for SELECTION
+          if(target.children[1].children[0].children[0].innerText == SELECTION) {
+            if(TYPE == 'bet') {
+              target.parentElement.nextElementSibling.children[0].children[0].children[1].children[0].click();
+              console.log('clicked bet...');
+              return true
+            }
+            else if(TYPE == 'lay') {
+              target.parentElement.nextElementSibling.children[0].children[0].children[2].children[0].click();
+              console.log('clicked lay...');
+              return true;
+            }
+            else {
+              return false;
+            }
+          }
+        });
+      }
+      catch(err) {
+        return Promise.reject(err);
+      }
+    }, SELECTION, TYPE);
+
+    // ensure BET_WIDGET_SELECTOR available
+    await page.waitForSelector(BET_WIDGET_SELECTOR, {
+     timeout: 180000
+   });
+
+   // ensure BET_HEADER_SELECTORavailable
+   await page.waitForSelector(BET_HEADER_SELECTOR, {
+     timeout: 180000
+   });
+
+   const runnerName = await page.$eval(BET_HEADER_SELECTOR, (el, SELECTION) => {
+     const
+       str = el.innerText,
+       lowercaseStr = str.toLowerCase(),
+       selection = SELECTION.toLowerCase();
+     if(lowercaseStr.includes(selection)) {
+       return SELECTION;
+     }
+     else {
+       return null;
+     }
+   }, SELECTION);
+
+   // confirm runnerName == SELECTION
+
+   if(runnerName == SELECTION) {
+     // ensure UP_ARROW_SELECTOR available
+     await page.waitForSelector(UP_ARROW_SELECTOR, {
+       timeout: 180000
+     });
+     // click on UP_ARROW_SELECTOR once
+     await page.click(UP_ARROW_SELECTOR);
+     // ensure PRICE_INPUT_SELECTOR available
+     await page.waitForSelector(PRICE_INPUT_SELECTOR, {
+       timeout: 180000
+     });
+     // set value of PRICE_INPUT_SELECTOR to TARGET_LIQUIDITY
+     await page.$eval(PRICE_INPUT_SELECTOR, (el, TARGET_LIQUIDITY) => el.value = TARGET_LIQUIDITY, TARGET_LIQUIDITY);
+     // ensure SIZE_INPUT_SELECTOR available
+     await page.waitForSelector(SIZE_INPUT_SELECTOR, {
+       timeout: 180000
+     });
+     // set value of SIZE_INPUT_SELECTOR to TARGET_ODDS
+     await page.$eval(SIZE_INPUT_SELECTOR, (el, TARGET_ODDS) => el.value = TARGET_ODDS, TARGET_ODDS);
+     // ensure SUBMIT_BET_SELECTOR available
+     await page.waitForSelector(SUBMIT_BET_SELECTOR, {
+       timeout: 180000
+     });
+     // click
+     await page.click(SUBMIT_BET_SELECTOR);
+     // ensure CONFIRM_SUBMIT_SELECTOR available
+     await page.waitForSelector(CONFIRM_SUBMIT_SELECTOR, {
+       timeout: 180000
+     });
+     // click
+     await page.click(CONFIRM_SUBMIT_SELECTOR);
+     // CLOSE IN 10 SECS
+     setTimeout(() => page.close(), 10000);
+   }
+   else {
+     const err = new Error('runnerName != SELECTION');
+     return Promise.reject(err);
+   }
+  }
+
+  process.on('message', data => {
+    const {selection, type, odds, liquidity} = data;
+    return placeBet(selection, type, odds, liquidity);
+  });
 }
 
 // execute scraper

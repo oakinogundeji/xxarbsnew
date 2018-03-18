@@ -352,11 +352,31 @@ function checkForArbs(exchange, data) {
             liquidity: B0L
           };
           if(!!C_Arb.timestampFrom && ((B0O < C_Arb.B0O) || (L0O > C_Arb.L0O) || (targetLiquidity < C_Arb.targetLiquidity))) {// check if conditions exist to end currentArb
+            // send placeBet msg
+            process.send({
+              placeBet: true,
+              payload: {
+                selection: SELECTION,
+                liquidity: targetLiquidity,
+                odds: targetOdds,
+                back: 'b',
+                lay: 's'
+              }});
             // end currentArb and save new one
             const reason = 'delta';
             return saveArbs(arbsDoc, C_Arb, reason);
           }
           else if(!C_Arb.timestampFrom) {// confirm no currentArb
+            // send placeBet msg
+            process.send({
+              placeBet: true,
+              payload: {
+                selection: SELECTION,
+                liquidity: targetLiquidity,
+                odds: targetOdds,
+                back: 'b',
+                lay: 's'
+              }});
             // save arbDoc
             return saveArbs(arbsDoc, null, null);
           }
@@ -442,10 +462,30 @@ function checkForArbs(exchange, data) {
             liquidity: L0L
           };
           if(!!C_Arb.timestampFrom && ((B0O < C_Arb.B0O) || (L0O > C_Arb.L0O) || (targetLiquidity < C_Arb.targetLiquidity))) {
+            // send placeBet msg
+            process.send({
+              placeBet: true,
+              payload: {
+                selection: SELECTION,
+                liquidity: targetLiquidity,
+                odds: targetOdds,
+                back: 's',
+                lay: 'b'
+              }});
             const reason = 'delta';
             return saveArbs(arbsDoc, C_Arb, reason);
           }
           else if(!C_Arb.timestampFrom) {
+            // send placeBet msg
+            process.send({
+              placeBet: true,
+              payload: {
+                selection: SELECTION,
+                liquidity: targetLiquidity,
+                odds: targetOdds,
+                back: 's',
+                lay: 'b'
+              }});
             return saveArbs(arbsDoc, null, null);
           }
         }
@@ -532,11 +572,31 @@ function checkForArbs(exchange, data) {
           };
           // save the arbDoc
           if(!!C_Arb.timestampFrom && ((B0O < C_Arb.B0O) || (L0O > C_Arb.L0O) || (targetLiquidity < C_Arb.targetLiquidity))) {// check if conditions exist to end currentArb
+            // send placeBet msg
+            process.send({
+              placeBet: true,
+              payload: {
+                selection: SELECTION,
+                liquidity: targetLiquidity,
+                odds: targetOdds,
+                back: 's',
+                lay: 'b'
+              }});
             // end currentArb and save new one
             const reason = 'delta';
             return saveArbs(arbsDoc, C_Arb, reason);
           }
           else if(!C_Arb.timestampFrom) {// confirm no currentArb
+            // send placeBet msg
+            process.send({
+              placeBet: true,
+              payload: {
+                selection: SELECTION,
+                liquidity: targetLiquidity,
+                odds: targetOdds,
+                back: 's',
+                lay: 'b'
+              }});
             // save arbDoc
             return saveArbs(arbsDoc, null, null);
           }
@@ -622,11 +682,31 @@ function checkForArbs(exchange, data) {
             liquidity: L0L
           };
           if(!!C_Arb.timestampFrom && ((B0O < C_Arb.B0O) || (L0O > C_Arb.L0O) || (targetLiquidity < C_Arb.targetLiquidity))) {// check if conditions exist to end currentArb
+            // send placeBet msg
+            process.send({
+              placeBet: true,
+              payload: {
+                selection: SELECTION,
+                liquidity: targetLiquidity,
+                odds: targetOdds,
+                back: 'b',
+                lay: 's'
+              }});
             // end currentArb and save new one
             const reason = 'delta';
             return saveArbs(arbsDoc, C_Arb, reason);
           }
           else if(!C_Arb.timestampFrom) {// confirm no currentArb
+            // send placeBet msg
+            process.send({
+              placeBet: true,
+              payload: {
+                selection: SELECTION,
+                liquidity: targetLiquidity,
+                odds: targetOdds,
+                back: 'b',
+                lay: 's'
+              }});
             // save arbDoc
             return saveArbs(arbsDoc, null, null);
           }

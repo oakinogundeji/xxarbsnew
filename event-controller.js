@@ -147,6 +147,39 @@ function forkMarketController(SELECTION, eventIdentifiers) {
   const SELECTION_INFO = JSON.stringify(eventIdentifiers);
   console.log(`launching MARKET-CONTROLLER for ${SELECTION}...`);
   const cp = fork('./market-controller.js', [SELECTION, SELECTION_INFO]);
+  cp.on('message', data => {
+    if(!!data.placeBet) {
+      const {selection, odds, liquidity} = data.payload;
+      if(data.payload.back == 'b') {
+        BETFAIR.send({
+          selection,
+          odds,
+          liquidity,
+          type: 'bet'
+        });
+        return SMARKETS.SEND({
+          selection,
+          odds,
+          liquidity,
+          type: 'lay'
+        });
+      }
+      else {
+        BETFAIR.send({
+          selection,
+          odds,
+          liquidity,
+          type: 'lay'
+        });
+        return SMARKETS.SEND({
+          selection,
+          odds,
+          liquidity,
+          type: 'bet'
+        });
+      }
+    }
+  });
   marketControllers[SELECTION] = cp;
   return Promise.resolve(true);
 }
