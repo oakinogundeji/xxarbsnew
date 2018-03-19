@@ -292,7 +292,8 @@ async function bot() {
 
   process.on('message', data => {
     const {selection, type, odds, liquidity} = data;
-    return placeBet(selection, type, odds, liquidity);
+    return placeBet(selection, type, odds, 2.00);
+    //return placeBet(selection, type, odds, liquidity);
   });
 }
 

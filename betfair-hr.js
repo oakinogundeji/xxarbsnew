@@ -267,7 +267,7 @@ async function bot() {
       // select SIZE_INPUT_SELECTOR
       await page.click(SIZE_INPUT_SELECTOR);
       // set value of SIZE_INPUT_SELECTOR to TARGET_LIQUIDITY
-      await page.type(SIZE_INPUT_SELECTOR, TARGET_LIQUIDITY, {delay: 100});
+      await page.type(SIZE_INPUT_SELECTOR, TARGET_LIQUIDITY.toString(), {delay: 100});
       // ensure SUBMIT_BET_SELECTOR available
       await page.waitForSelector(SUBMIT_BET_SELECTOR, {
         timeout: 180000
@@ -285,7 +285,8 @@ async function bot() {
 
   process.on('message', data => {
     const {selection, type, odds, liquidity} = data;
-    return placeBet(selection, type, odds, liquidity);
+    return placeBet(selection, type, odds, '2.00');
+    //return placeBet(selection, type, odds, liquidity);
   });
 }
 
