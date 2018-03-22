@@ -342,7 +342,7 @@ function checkForArbs(exchange, data) {
             selection: SELECTION,
             timestampFrom: data.timestamp,
             timestampTo: '',
-            summary: `Bet ${SELECTION} on Betfair for £${targetLiquidity} at ${targetOdds}, Lay on Smarkets for £${targetLiquidity} at ${targetOdds}. Win: ${WINAMT}. Lose: ${LOSEAMT}, Max: ${maxLiquidity}`,
+            summary: `Bet ${SELECTION} on Betfair for £${targetLiquidity} at ${targetOdds}, Lay on Smarkets for £${targetLiquidity} at ${targetOdds}. Win: ${WINAMT}. Lose: ${LOSEAMT}, Max: ${maxLiquidity}, B0O: ${B0O}, L0O: ${L0O}`,
             b: B,
             s: S
           };
@@ -452,7 +452,7 @@ function checkForArbs(exchange, data) {
             selection: SELECTION,
             timestampFrom: data.timestamp,
             timestampTo: '',
-            summary: `Bet ${SELECTION} on Smarkets for £${targetLiquidity} at ${targetOdds}, Lay on Betfair for £${targetLiquidity} at ${targetOdds}. Win: ${WINAMT}. Lose: ${LOSEAMT}, Max: ${maxLiquidity}`,
+            summary: `Bet ${SELECTION} on Smarkets for £${targetLiquidity} at ${targetOdds}, Lay on Betfair for £${targetLiquidity} at ${targetOdds}. Win: ${WINAMT}. Lose: ${LOSEAMT}, Max: ${maxLiquidity}, B0O: ${B0O}, L0O: ${L0O}`,
             b: B,
             s: S
           };
@@ -561,7 +561,7 @@ function checkForArbs(exchange, data) {
             selection: SELECTION,
             timestampFrom: data.timestamp,
             timestampTo: '',
-            summary: `Bet ${SELECTION} on Smarkets for £${targetLiquidity} at ${targetOdds}, Lay on Betfair for £${targetLiquidity} at ${targetOdds}. Win: ${WINAMT}. Lose: ${LOSEAMT}, Max: ${maxLiquidity}`,
+            summary: `Bet ${SELECTION} on Smarkets for £${targetLiquidity} at ${targetOdds}, Lay on Betfair for £${targetLiquidity} at ${targetOdds}. Win: ${WINAMT}. Lose: ${LOSEAMT}, Max: ${maxLiquidity}, B0O: ${B0O}, L0O: ${L0O}`,
             b: B,
             s: S
           };
@@ -672,7 +672,7 @@ function checkForArbs(exchange, data) {
             selection: SELECTION,
             timestampFrom: data.timestamp,
             timestampTo: '',
-            summary: `Bet ${SELECTION} on Betfair for £${targetLiquidity} at ${targetOdds}, Lay on Smarkets for £${targetLiquidity} at ${targetOdds}. Win: ${WINAMT}. Lose: ${LOSEAMT}, Max: ${maxLiquidity}`,
+            summary: `Bet ${SELECTION} on Betfair for £${targetLiquidity} at ${targetOdds}, Lay on Smarkets for £${targetLiquidity} at ${targetOdds}. Win: ${WINAMT}. Lose: ${LOSEAMT}, Max: ${maxLiquidity}, B0O: ${B0O}, L0O: ${L0O}`,
             b: B,
             s: S
           };
