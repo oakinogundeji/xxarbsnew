@@ -9,6 +9,7 @@ const
   {promisify} = require('util'),
   fs = require('fs'),
   readFileAsync = promisify(fs.readFile),
+  unlinkFileAsync = promisify(fs.unlink),
   P = require('puppeteer'),
   Promise = require('bluebird'),
   mongoose = require('mongoose'),
@@ -261,7 +262,7 @@ function spawnBetfairBot() {
       return uploadShot(attachmentPath, getBucketParams, imgUploadParams)
         .then(url => {
           const BODY = `The URL of the screenshot of the automated bet is ${url}`;
-          return sendEmail(info, BODY);
+          return sendEmail(info, BODY, attachmentPath);
         })
         .catch(err => console.error(err));
     }
@@ -348,7 +349,7 @@ function spawnSmarketsBot() {
       return uploadShot(attachmentPath, getBucketParams, imgUploadParams)
         .then(url => {
           const BODY = `The URL of the screenshot of the automated bet is ${url}`;
-          return sendEmail(info, BODY);
+          return sendEmail(info, BODY, attachmentPath);
         })
         .catch(err => console.error(err));
     }
@@ -421,7 +422,7 @@ async function uploadShot(attachmentPath, getBucketParams, imgUploadParams) {
   }
 }
 
-function sendEmail(info, BODY) {
+function sendEmail(info, BODY, SCREENSHOT_FILE) {
   return request
             .post(ENDPOINT)
             .set('Accept', 'application/json')
@@ -434,6 +435,8 @@ function sendEmail(info, BODY) {
               "templateName": "GenericEmail"
             })
             .then(resp => {
+              // delete screenshot
+              const deletedScreenshot = await unlinkFileAsync(SCREENSHOT_FILE);
               log.info('msg sending response...');
               log.info(resp.statusCode);
               log.info(`The process uses approximately ${used} MB`);
