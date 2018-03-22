@@ -6,12 +6,18 @@ if(process.env.NODE_ENV != 'production') {
 // dependencies
 const
   {fork, spawn} = require('child_process'),
+  {promisify} = require('util'),
+  fs = require('fs'),
+  readFileAsync = promisify(fs.readFile),
   P = require('puppeteer'),
   Promise = require('bluebird'),
   mongoose = require('mongoose'),
   moment = require('moment'),
+  request = require('superagent'),
+  AWS = require('aws-sdk'),
   DBURL = process.env.DBURL,
   EventCardModel = require('./models/event-cards'),
+  BUCKET = 'xx-arbs-bet-screenshots',
   SMARKETS_URL = process.env.SMARKETS_URL,
   BETFAIR_URL = process.env.BETFAIR_URL,
   SMARKETS_EVENTS_CONTAINER_SELECTOR = 'ul.contracts',
@@ -27,7 +33,16 @@ let
   SMARKETS,
   SPORT,
   EVENT_LABEL,
-  TARGETS;
+  TARGETS,
+  imgSize;
+
+AWS.config.update({
+  region: 'eu-west-2'
+});
+
+const s3 = new AWS.S3();
+
+AWS.config.setPromisesDependency(Promise);
 // helper functions
 
 async function getSelections() {
@@ -220,6 +235,36 @@ function spawnBetfairBot() {
         }
       });
     }
+    else if(!!dataObj.screenshot) {     
+      // SETUP
+
+      const 
+        attachmentPath = dataObj.screenshot,
+        screenshotNameArray = attachmentPath.split('/'),
+        screenshotName = screenshotNameArray[2],
+        info = `${EVENT_LABEL} -- ${dataObj.info}`;
+
+      const getBucketParams = {
+        Bucket: BUCKET
+      };
+
+      const imgUploadParams = {
+        Bucket: BUCKET,
+        Key: screenshotName,
+        ACL: 'public-read',
+        ContentType: 'Image/*',
+        ContentLength: imgSize,
+        StorageClass: 'REDUCED_REDUNDANCY',
+        Body: img
+      };
+      // upload IMG and send EMAIL
+      return uploadShot(attachmentPath, getBucketParams, imgUploadParams)
+        .then(url => {
+          const BODY = `The URL of the screenshot of the automated bet is ${url}`;
+          return sendEmail(info, BODY);
+        })
+        .catch(err => console.error(err));
+    }
     else {
       let target = dataObj.selection;
       target = target.toLowerCase();
@@ -277,11 +322,43 @@ function spawnSmarketsBot() {
   SMARKETS.on('message', data => {
     console.log('data from Smarkets...');
     const dataObj = JSON.parse(data);
-    const marketController = dataObj.selection;
-    if(marketController in marketControllers) {
-      return marketControllers[marketController].send({
-        exchange: 'smarkets',
-        payload: dataObj});
+    if(!!dataObj.screenshot) {     
+      // SETUP
+
+      const 
+        attachmentPath = dataObj.screenshot,
+        screenshotNameArray = attachmentPath.split('/'),
+        screenshotName = screenshotNameArray[2],
+        info = `${EVENT_LABEL} -- ${dataObj.info}`;
+
+      const getBucketParams = {
+        Bucket: BUCKET
+      };
+
+      const imgUploadParams = {
+        Bucket: BUCKET,
+        Key: screenshotName,
+        ACL: 'public-read',
+        ContentType: 'Image/*',
+        ContentLength: imgSize,
+        StorageClass: 'REDUCED_REDUNDANCY',
+        Body: img
+      };
+      // upload IMG and send EMAIL
+      return uploadShot(attachmentPath, getBucketParams, imgUploadParams)
+        .then(url => {
+          const BODY = `The URL of the screenshot of the automated bet is ${url}`;
+          return sendEmail(info, BODY);
+        })
+        .catch(err => console.error(err));
+    }
+    else {
+      const marketController = dataObj.selection;
+      if(marketController in marketControllers) {
+        return marketControllers[marketController].send({
+          exchange: 'smarkets',
+          payload: dataObj});
+      }
     }
   });
 
@@ -310,6 +387,58 @@ function spawnSmarketsBot() {
       return console.error(`SMARKETS BOT closed abnormally`);
     }
   });
+}
+
+async function uploadShot(attachmentPath, getBucketParams, imgUploadParams) {
+  // retrieve img
+  const img = await readFileAsync(attachmentPath);
+  imgSize = img.length;
+
+  // confirm S3 Bucket OK
+  const bucketOK = await s3.headBucket(getBucketParams).promise();
+
+  if(!!bucketOK) {
+    // define upload params
+
+    const imgUploadParams = {
+      Bucket: BUCKET,
+      Key: screenshotName,
+      ACL: 'public-read',
+      ContentType: 'Image/*',
+      ContentLength: imgSize,
+      StorageClass: 'REDUCED_REDUNDANCY',
+      Body: img
+    };
+
+    // upload screenshot to bucket BUT don't overwrite
+
+    const imgUpload = await s3.upload(imgUploadParams).promise();
+
+    /*console.log(imgUpload);
+
+    return console.log(`img URL: ${imgUpload.Location}`);*/  
+    return Promise.resolve(imgUpload.Location);
+  }
+}
+
+function sendEmail(info, BODY) {
+  return request
+            .post(ENDPOINT)
+            .set('Accept', 'application/json')
+            .send({
+              "transport": "ses",
+              "from": "noreply@valueservices.uk",
+              "to": MSG_EMAIL,
+              "subject": info,
+              "emailbody": BODY,
+              "templateName": "GenericEmail"
+            })
+            .then(resp => {
+              log.info('msg sending response...');
+              log.info(resp.statusCode);
+              log.info(`The process uses approximately ${used} MB`);
+              return Promise.resolve(true);
+            });
 }
 
 // connect to DBURL

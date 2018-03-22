@@ -28,7 +28,8 @@ const
   BET_VALUES_SELECTOR = 'div.bet-values',
   PRICE_INPUT_SELECTOR = 'input.price-input',
   SIZE_INPUT_SELECTOR = 'input.size-input',
-  SUBMIT_BET_SELECTOR = 'button.betslip-submit-btn';
+  SUBMIT_BET_SELECTOR = 'button.betslip-submit-btn',
+  SCREEN_SHOT_DIR = './screenshots/';
 
 const
   EVENT_TIME_ARRAY = EVENT_LABEL.split('|'),
@@ -274,6 +275,24 @@ async function bot() {
       });
       // submit the BET
       await page.click(SUBMIT_BET_SELECTOR);
+      // wait 10 secs for results to be displayed
+      await page.waitFor(10*1000);
+      // take screenshot
+      let timestamp = new Date();
+      timestamp = timestamp.toISOString();
+      const screenshotFile = `${SCREEN_SHOT_DIR}betfair-${SELECTION}-${TYPE}-${timestamp}.png`;
+      const info = `${TYPE} ${SELECTION}`;
+      await page.screenshot({
+        path: screenshotFile,
+        fullPage: true
+      });
+      // send msg to fire email
+      const msg = {
+        info,
+        screenshot: screenshotFile
+      };
+      const output = JSON.stringify(msg);
+      console.log(output);
       // CLOSE IN 10 SECS
       setTimeout(() => page.close(), 10000);
     }

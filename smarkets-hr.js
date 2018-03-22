@@ -29,7 +29,8 @@ const
   PRICE_INPUT_SELECTOR = 'div:nth-child(1) > div > div.param > span > input',
   SIZE_INPUT_SELECTOR = 'div:nth-child(2) > div > div.param > span > input',
   SUBMIT_BET_SELECTOR = 'button.confirm-bet-button',
-  CONFIRM_SUBMIT_SELECTOR = 'div.bet-widget-wrapper > form > div > div.bet-widget-main-row > div.bet-widget-main-row-right > div.bet-submit > button';
+  CONFIRM_SUBMIT_SELECTOR = 'div.bet-widget-wrapper > form > div > div.bet-widget-main-row > div.bet-widget-main-row-right > div.bet-submit > button',
+  SCREEN_SHOT_DIR = './screenshots/';
 
 
 // define scraper function
@@ -281,6 +282,24 @@ async function bot() {
      });
      // click
      await page.click(CONFIRM_SUBMIT_SELECTOR);
+     // wait 10 secs for results to be displayed
+     await page.waitFor(10*1000);
+     // take screenshot
+     let timestamp = new Date();
+     timestamp = timestamp.toISOString();
+     const screenshotFile = `${SCREEN_SHOT_DIR}smarkets-${SELECTION}-${TYPE}-${timestamp}.png`;
+     const info = `${TYPE} ${SELECTION}`;
+     await page.screenshot({
+        path: screenshotFile,
+        fullPage: true
+      });
+      // send msg to fire email
+      const msg = {
+        info,
+        screenshot: screenshotFile
+      };
+    const output = JSON.stringify(msg);
+    console.log(output);
      // CLOSE IN 10 SECS
      setTimeout(() => page.close(), 10000);
    }
