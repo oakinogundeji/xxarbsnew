@@ -243,7 +243,10 @@ function spawnBetfairBot() {
         attachmentPath = dataObj.screenshot,
         screenshotNameArray = attachmentPath.split('/'),
         screenshotName = screenshotNameArray[2],
-        info = `${EVENT_LABEL} -- ${dataObj.info}`;
+        info = `${EVENT_LABEL} -- ${dataObj.info}`,
+        regx = /[^\d|(a-z)]/g,
+        folderName = EVENT_LABEL.replace(regx, '-'),
+        KEY = `${folderName}/${screenshotName}`;
 
       const getBucketParams = {
         Bucket: BUCKET
@@ -251,7 +254,7 @@ function spawnBetfairBot() {
 
       const imgUploadParams = {
         Bucket: BUCKET,
-        Key: screenshotName,
+        Key: KEY,
         ACL: 'public-read',
         ContentType: 'Image/*',
         ContentLength: imgSize,
@@ -330,7 +333,10 @@ function spawnSmarketsBot() {
         attachmentPath = dataObj.screenshot,
         screenshotNameArray = attachmentPath.split('/'),
         screenshotName = screenshotNameArray[2],
-        info = `${EVENT_LABEL} -- ${dataObj.info}`;
+        info = `${EVENT_LABEL} -- ${dataObj.info}`,
+        regx = /[^\d|(a-z)]/g,
+        folderName = EVENT_LABEL.replace(regx, '-'),
+        KEY = `${folderName}/${screenshotName}`;
 
       const getBucketParams = {
         Bucket: BUCKET
@@ -338,7 +344,7 @@ function spawnSmarketsBot() {
 
       const imgUploadParams = {
         Bucket: BUCKET,
-        Key: screenshotName,
+        Key: KEY,
         ACL: 'public-read',
         ContentType: 'Image/*',
         ContentLength: imgSize,
