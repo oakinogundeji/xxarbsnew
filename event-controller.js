@@ -442,7 +442,7 @@ function sendEmail(info, BODY, SCREENSHOT_FILE) {
               "emailbody": BODY,
               "templateName": "GenericEmail"
             })
-            .then(resp => {
+            .then(async (resp) => {
               // delete screenshot
               const deletedScreenshot = await unlinkFileAsync(SCREENSHOT_FILE);
               log.info('msg sending response...');
