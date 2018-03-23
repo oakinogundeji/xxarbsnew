@@ -25,7 +25,9 @@ const
   SMARKETS_SELECTIONS_SELECTOR = 'div.contract-info',
   EVENT_END_URL = process.env.EVENT_END_URL,
   HR_EVENT_LINKS_SELECTOR = 'a.race-link',
-  GENERIC_EVENT_LINKS_SELECTOR = 'span.event-name';
+  GENERIC_EVENT_LINKS_SELECTOR = 'span.event-name',
+  MSG_EMAIL = 'simon@percayso.com, paul@percayso.com',
+  ENDPOINT = process.env.ENDPOINT;
 
 let
   selectionsList,
