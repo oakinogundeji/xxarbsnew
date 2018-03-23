@@ -183,7 +183,7 @@ async function bot() {
               matchedAmount,
               timestamp,
               odds: Number(odds),
-              liquidity: Number(liquidity.slice(1)),
+              liquidity: Number(liquidity.slice(1)).toFixed(2),
               selection: SELECTION
 
             };
