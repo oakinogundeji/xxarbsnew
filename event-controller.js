@@ -167,32 +167,32 @@ function forkMarketController(SELECTION, eventIdentifiers) {
   const cp = fork('./market-controller.js', [SELECTION, SELECTION_INFO]);
   cp.on('message', data => {
     if(!!data.placeBet) {
-      const {selection, odds, liquidity} = data.payload;
+      const {selection, B0O, L0O, liquidity} = data.payload;
       if(data.payload.back == 'b') {
         BETFAIR.send({
           selection,
-          odds,
           liquidity,
+          odds: B0O,
           type: 'bet'
         });
         return SMARKETS.SEND({
           selection,
-          odds,
           liquidity,
+          odds: L0O,
           type: 'lay'
         });
       }
       else {
         BETFAIR.send({
           selection,
-          odds,
           liquidity,
+          odds: L0O,
           type: 'lay'
         });
         return SMARKETS.SEND({
           selection,
-          odds,
           liquidity,
+          odds: B0O,
           type: 'bet'
         });
       }
@@ -238,10 +238,10 @@ function spawnBetfairBot() {
         }
       });
     }
-    else if(!!dataObj.screenshot) {     
+    else if(!!dataObj.screenshot) {
       // SETUP
 
-      const 
+      const
         attachmentPath = dataObj.screenshot,
         screenshotNameArray = attachmentPath.split('/'),
         screenshotName = screenshotNameArray[2],
@@ -328,10 +328,10 @@ function spawnSmarketsBot() {
   SMARKETS.on('message', data => {
     console.log('data from Smarkets...');
     const dataObj = JSON.parse(data);
-    if(!!dataObj.screenshot) {     
+    if(!!dataObj.screenshot) {
       // SETUP
 
-      const 
+      const
         attachmentPath = dataObj.screenshot,
         screenshotNameArray = attachmentPath.split('/'),
         screenshotName = screenshotNameArray[2],
@@ -425,7 +425,7 @@ async function uploadShot(attachmentPath, getBucketParams, imgUploadParams) {
 
     /*console.log(imgUpload);
 
-    return console.log(`img URL: ${imgUpload.Location}`);*/  
+    return console.log(`img URL: ${imgUpload.Location}`);*/
     return Promise.resolve(imgUpload.Location);
   }
 }
