@@ -7,10 +7,11 @@ const
   Promise = require('bluebird'),
   accounting = require('accounting'),
   mongoose = require('mongoose'),
-  request = require('superagent'),
+  //request = require('superagent'),
   log = require('./helpers').getLogger('APP'),
   SelectionDocModel = require('./models/selection-docs'),
   SelectionArbsDocModel = require('./models/selection-arbs-docs'),
+  sendEmail = require('./send-mail'),
   SELECTION = process.argv[2],
   eventIdentifiers = JSON.parse(process.argv[3]),
   EVENT_LABEL = eventIdentifiers.eventLabel,
@@ -817,7 +818,8 @@ function saveArbs(arbsDoc, C_Arb, reason) {
           log.info(addedNewArbsDocData);
           const used = process.memoryUsage().heapUsed / 1024 / 1024;
           const BODY = `${arbsDoc.summary}. TimestampFrom: ${arbsDoc.timestampFrom}`;
-          return request
+          return sendEmail(EVENT_LABEL, BODY);
+          /*return request
             .post(ENDPOINT)
             .set('Accept', 'application/json')
             .send({
@@ -837,7 +839,7 @@ function saveArbs(arbsDoc, C_Arb, reason) {
             .catch(err => {
               log.error('email sending err...');
               return log.error(err);
-            });
+            });*/
         }
         catch(err) {
           log.error('failed to add new data to selectonArbsDoc...');
@@ -904,7 +906,8 @@ function endcurrentArb(timestamp, C_Arb, reason) {
         log.info(endedOldArbsDocData);
         const used = process.memoryUsage().heapUsed / 1024 / 1024;
         const BODY = `${arbsDoc.summary}. TimestampFrom: ${arbsDoc.timestampFrom}`;
-        return request
+        return sendEmail(EVENT_LABEL, BODY);
+        /*return request
           .post(ENDPOINT)
           .set('Accept', 'application/json')
           .send({
@@ -924,7 +927,7 @@ function endcurrentArb(timestamp, C_Arb, reason) {
           .catch(err => {
             log.error('email sending err...');
             return log.error(err);
-          });
+          });*/
       }
       catch(err) {
         log.error('failed to end old arbs doc in db...');

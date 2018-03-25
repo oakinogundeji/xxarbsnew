@@ -19,6 +19,7 @@
   "dependencies": {
     "accounting": "^0.4.1",
     "aws-sdk": "^2.212.1",
+    "axios": "^0.18.0",
     "bluebird": "^3.5.1",
     "dotenv": "^4.0.0",
     "log4js": "^2.5.3",

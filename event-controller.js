@@ -14,10 +14,11 @@ const
   Promise = require('bluebird'),
   mongoose = require('mongoose'),
   moment = require('moment'),
-  request = require('superagent'),
+  //request = require('superagent'),
   AWS = require('aws-sdk'),
   DBURL = process.env.DBURL,
   EventCardModel = require('./models/event-cards'),
+  sendEmail = require('./send-mail'),
   BUCKET = 'xx-arbs-bet-screenshots',
   SMARKETS_URL = process.env.SMARKETS_URL,
   BETFAIR_URL = process.env.BETFAIR_URL,
@@ -429,7 +430,7 @@ async function uploadShot(attachmentPath, getBucketParams, imgUploadParams) {
     return Promise.resolve(imgUpload.Location);
   }
 }
-
+/*
 function sendEmail(info, BODY, SCREENSHOT_FILE) {
   return request
             .post(ENDPOINT)
@@ -450,7 +451,7 @@ function sendEmail(info, BODY, SCREENSHOT_FILE) {
               log.info(`The process uses approximately ${used} MB`);
               return Promise.resolve(true);
             });
-}
+}*/
 
 // connect to DBURL
 let db;
