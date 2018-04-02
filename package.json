@@ -1,21 +1,13 @@
 {
-  "name": "streamingbots",
+  "name": "xxarbs",
   "version": "1.0.0",
   "description": "",
-  "main": "controller.js",
+  "main": "event-controller.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/oakinogundeji/streamingbots.git"
-  },
-  "author": "TSSDEVS",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/oakinogundeji/streamingbots/issues"
-  },
-  "homepage": "https://github.com/oakinogundeji/streamingbots#readme",
+  "author": "Value Services Dev Team",
+  "license": "",
   "dependencies": {
     "accounting": "^0.4.1",
     "aws-sdk": "^2.212.1",
@@ -26,7 +18,6 @@
     "moment": "^2.20.1",
     "mongodb": "^3.0.1",
     "mongoose": "^5.0.4",
-    "puppeteer": "^1.0.0",
-    "superagent": "^3.8.2"
+    "puppeteer": "^1.0.0"
   }
 }

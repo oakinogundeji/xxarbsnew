@@ -176,7 +176,7 @@ function forkMarketController(SELECTION, eventIdentifiers) {
           odds: B0O,
           type: 'bet'
         });
-        return SMARKETS.SEND({
+        return SMARKETS.send({
           selection,
           liquidity,
           odds: L0O,
@@ -190,7 +190,7 @@ function forkMarketController(SELECTION, eventIdentifiers) {
           odds: L0O,
           type: 'lay'
         });
-        return SMARKETS.SEND({
+        return SMARKETS.send({
           selection,
           liquidity,
           odds: B0O,

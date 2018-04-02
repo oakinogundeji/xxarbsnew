@@ -9,7 +9,7 @@ const
   Promise = require('bluebird'),
   {promisify} = require('util'),
   fs = require('fs'),
-  unlinkFileAsync = promisify(fs.unlink)
+  unlinkFileAsync = promisify(fs.unlink),
   MSG_EMAIL = 'simon@percayso.com, paul@percayso.com',
   //MSG_EMAIL = 'oakinogundeji@gmail.com',
   ENDPOINT = process.env.ENDPOINT;
