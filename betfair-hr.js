@@ -128,7 +128,7 @@ async function bot() {
             odds = e.target.innerText;
             liquidity = e.target.parentElement.parentElement.children[0].children[1].innerText;
           }
-          else if((e.target.className == 'bet-button-price') && (e.target.parentElement.parentElement.parentElement.nextElementSibling.className == 'bet-buttons lay-cell first-lay-cell')) {
+          else if((e.target.className == 'bet-button-price') && (e.target.parentElement.parentElement.parentElement.previousElementSibling.className == 'bet-buttons lay-cell first-lay-cell')) {
             betType = 'l1';
             odds = e.target.innerText;
             liquidity = e.target.parentElement.parentElement.children[0].children[1].innerText;
@@ -138,7 +138,7 @@ async function bot() {
             odds = e.target.innerText;
             liquidity = e.target.parentElement.parentElement.children[0].children[1].innerText;
           }
-          else if((e.target.className == 'bet-button-price') && (e.target.parentElement.parentElement.parentElement.nextElementSibling.nextElementSibling.className == 'bet-buttons lay-cell first-lay-cell')) {
+          else if((e.target.className == 'bet-button-price') && (e.target.parentElement.parentElement.parentElement.previousElementSibling.previousElementSibling.className == 'bet-buttons lay-cell first-lay-cell')) {
             betType = 'l2';
             odds = e.target.innerText;
             liquidity = e.target.parentElement.parentElement.children[0].children[1].innerText;
@@ -158,7 +158,7 @@ async function bot() {
             odds = e.target.parentElement.children[0].innerText;
             liquidity = e.target.innerText;
           }
-          else if((e.target.className == 'bet-button-size') && (e.target.parentElement.parentElement.parentElement.nextElementSibling.className == 'bet-buttons lay-cell first-lay-cell')) {
+          else if((e.target.className == 'bet-button-size') && (e.target.parentElement.parentElement.parentElement.previousElementSibling.className == 'bet-buttons lay-cell first-lay-cell')) {
             betType = 'l1';
             odds = e.target.parentElement.children[0].innerText;
             liquidity = e.target.innerText;
@@ -168,7 +168,7 @@ async function bot() {
             odds = e.target.parentElement.children[0].innerText;
             liquidity = e.target.innerText;
           }
-          else if((e.target.className == 'bet-button-size') && (e.target.parentElement.parentElement.parentElement.nextElementSibling.nextElementSibling.className == 'bet-buttons lay-cell first-lay-cell')) {
+          else if((e.target.className == 'bet-button-size') && (e.target.parentElement.parentElement.parentElement.previousElementSibling.previousElementSibling.className == 'bet-buttons lay-cell first-lay-cell')) {
             betType = 'l2';
             odds = e.target.parentElement.children[0].innerText;
             liquidity = e.target.innerText;

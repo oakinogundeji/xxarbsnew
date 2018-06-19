@@ -166,6 +166,7 @@ function forkMarketController(SELECTION, eventIdentifiers) {
   const SELECTION_INFO = JSON.stringify(eventIdentifiers);
   console.log(`launching MARKET-CONTROLLER for ${SELECTION}...`);
   const cp = fork('./market-controller.js', [SELECTION, SELECTION_INFO]);
+  /*
   cp.on('message', data => {
     if(!!data.placeBet) {
       const {selection, B0O, L0O, liquidity} = data.payload;
@@ -199,6 +200,7 @@ function forkMarketController(SELECTION, eventIdentifiers) {
       }
     }
   });
+  */
   marketControllers[SELECTION] = cp;
   return Promise.resolve(true);
 }
@@ -656,13 +658,13 @@ connectToDB()
       TARGETS = selectionsList.filter(selection => selection.toLowerCase() != 'draw');
       console.log('event-controller closing db connection...');
       db.close();
-      return forkMarketController(selectionsList[0], eventIdentifiers);
-      //return selectionsList.forEach(selection => forkMarketController(selection, eventIdentifiers));
+      //return forkMarketController(selectionsList[0], eventIdentifiers);
+      return selectionsList.forEach(selection => forkMarketController(selection, eventIdentifiers));
     } else {
       console.log('event-controller closing db connection...');
       db.close();
-      return forkMarketController(selectionsList[0], eventIdentifiers);
-      //return selectionsList.forEach(selection => forkMarketController(selection, eventIdentifiers));
+      //return forkMarketController(selectionsList[0], eventIdentifiers);
+      return selectionsList.forEach(selection => forkMarketController(selection, eventIdentifiers));
     }
   })
   .then(ok => spawnBots())
