@@ -1,0 +1,97 @@
+{
+  "quoteObject": {
+    "subject": {
+      "-DoB": "1954-02-21",
+      "-marital_status": "M",
+      "-resident_since": "1954-02-21",
+      "-homeowner": "Y",
+      "-children": "1",
+      "-declined_insurance": "N",
+      "-criminal_convictions": "N",
+      "identity": {
+        "-title": "Mr",
+        "-forename": "John",
+        "-surname": "Doe",
+        "-gender": "Male"
+      },
+      "employment": [
+        {
+          "-status": "Employed",
+          "occupation": {
+            "-type": "FULL",
+            "-industry": "Computers-software",
+            "-role": "Product Manager"
+          }
+        }
+      ],
+      "ncb": {
+        "-years": "10",
+        "-protected": "Y",
+        "-to_be_protected": "Y"
+      },
+      "email": {
+        "-address": "john@doe.com"
+      },
+      "telephone": {
+        "-number": "07867 904747",
+        "-type": "M"
+      },
+      "address": {
+        "-postcode": "NG4 1AH",
+        "-number_name": "182",
+        "-street": "Oakdale Road",
+        "-district": "Carlton",
+        "-town": "Nottingham",
+        "-total_vehicles": "1"
+      },
+      "drivingLicence": {
+        "-type": "Full",
+        "-date_issued": "23-08-77",
+        "-number": "HILL9502214RE9ZY",
+        "-additional_quals": "N",
+        "-medical_conditions": "N",
+        "-where_issued": "UK",
+        "-automatic": "N",
+        "-other_vehicles": "N"
+      },
+      "claims": [
+        {
+          "-date": "2016-05-30",
+          "-type": "F",
+          "-loss_amount": "1000.00",
+          "-NCB_affected": "Protected"
+        }
+      ],
+      "convictions": [
+        {
+          "-date": "2016-05-29",
+          "-type": "SP30",
+          "-points": "3"
+        }
+      ]
+    },
+    "vehicle": {
+      "-vrn": "AX03LCW",
+      "-modifications": "N",
+      "-dashcam": "N",
+      "-purchase_date": "2016-07-01",
+      "-owner": "Y",
+      "-keeper": "Y",
+      "-used_peak_time": "N",
+      "-use": "Social and Commuting",
+      "-kept_overnight": "Locked garage",
+      "-kept_day": "Office/factory car park",
+      "-mileage": "10000"
+    },
+    "policy": {
+      "-current_cover_start": "16/07/2017",
+      "-cover_type": "Comprehensive",
+      "-voluntary_excess": "£250",
+      "-renewal_price": "299",
+      "-payment_terms": "Annually",
+      "-add_breakdown": "N",
+      "-add_household": "N",
+      "-quote_cover_start": "21"
+    }
+  }
+}

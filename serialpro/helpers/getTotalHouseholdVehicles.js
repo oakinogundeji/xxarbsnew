@@ -1,0 +1,14 @@
+function getTotalHouseholdVehicles(HOUSEHOLD_VEHICLES, HOUSEHOLD_VEHICLES_OPTIONS) {
+  let HOUSEHOLD_VEHICLES_RESPONSE;
+  for (let i = 0; i < HOUSEHOLD_VEHICLES_OPTIONS.length; i++) {
+    const HOUSEHOLD_VEHICLES_OPTION = HOUSEHOLD_VEHICLES_OPTIONS[i];
+    if (HOUSEHOLD_VEHICLES === HOUSEHOLD_VEHICLES_OPTION.label) {
+      HOUSEHOLD_VEHICLES_RESPONSE = HOUSEHOLD_VEHICLES_OPTION.value;
+      break;
+    }
+  }
+
+  return HOUSEHOLD_VEHICLES_RESPONSE;
+}
+
+module.exports = getTotalHouseholdVehicles;

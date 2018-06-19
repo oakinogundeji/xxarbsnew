@@ -1,0 +1,19 @@
+function getFullTimeOccupationStatus(EMPLOYMENT_STATUS, EMPLOYMENT_STATUS_OPTIONS) {
+  let EMPLOYMENT_STATUS_RESPONSE;
+  EMPLOYMENT_STATUS = EMPLOYMENT_STATUS.toLowerCase();
+  if (EMPLOYMENT_STATUS.includes('employed')) {
+    if (EMPLOYMENT_STATUS.includes('self')) {
+      EMPLOYMENT_STATUS_RESPONSE = EMPLOYMENT_STATUS_OPTIONS[1].value;
+    } else {
+      EMPLOYMENT_STATUS_RESPONSE = EMPLOYMENT_STATUS_OPTIONS[0].value;
+    }
+  } else if (EMPLOYMENT_STATUS.includes('full')) {
+    EMPLOYMENT_STATUS_RESPONSE = EMPLOYMENT_STATUS_OPTIONS[2].value;
+  } else {
+    EMPLOYMENT_STATUS_RESPONSE = EMPLOYMENT_STATUS_OPTIONS[3].value;
+  }
+
+  return EMPLOYMENT_STATUS_RESPONSE;
+}
+
+module.exports = getFullTimeOccupationStatus;
